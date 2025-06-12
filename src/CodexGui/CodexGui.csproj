@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Common/Common.csproj" />
+    <ProjectReference Include="../SubmodulesDeflattenerExport/SubmodulesDeflattenerExport.csproj" />
+    <ProjectReference Include="../SubmodulesFlattenerSetup/SubmodulesFlattenerSetup.csproj" />
+    <ProjectReference Include="../CsprojSetupToolApp/CsprojSetupToolApp.csproj" />
+  </ItemGroup>
+</Project>

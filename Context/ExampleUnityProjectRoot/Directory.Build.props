@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);MSB3243</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(MSBuildThisFileDirectory)UnityAssemblies\Managed\UnityEngine.CoreModule\UnityEngine.CoreModule.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(MSBuildThisFileDirectory)UnityAssemblies\Managed\UnityEngine.UI\UnityEngine.UI.dll</HintPath>
+      <Private>True</Private>
+	</Reference>
+	<Reference Include="player-state">
+      <HintPath>$(MSBuildThisFileDirectory)Assets\Shared\merge-shared-code\Precompiled\player-state.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="resource-parser">
+      <HintPath>$(MSBuildThisFileDirectory)Assets\Shared\merge-shared-code\Precompiled\resource-parser.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
+  </ItemGroup>
+</Project>

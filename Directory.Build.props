@@ -1,0 +1,30 @@
+<Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SubmodulesFlattener'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/SubmodulesFlattener/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/SubmodulesFlattener/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SubmodulesFlattenerSetup'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/SubmodulesFlattenerSetup/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/SubmodulesFlattenerSetup/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'CsprojSetupToolApp'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/CsprojSetupToolApp/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/CsprojSetupToolApp/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SubmodulesDeflattenerExport'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/SubmodulesDeflattenerExport/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/SubmodulesDeflattenerExport/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SubmodulesDeflattenerImport'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/SubmodulesDeflattenerImport/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/SubmodulesDeflattenerImport/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Common'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/Common/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/Common/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'CodexGui'">
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/CodexGui/</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/CodexGui/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,28 @@
+using UnityEditor;
+using System;
+using System.Reflection;
+
+public static class RegenerateProjectFiles
+{
+    public static void Regenerate()
+    {
+        try
+        {
+            // Try reflection for internal SyncVS
+            var syncVS = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.SyncVS");
+            var syncSolution = syncVS.GetMethod("SyncSolution", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+            if (syncSolution != null)
+            {
+                syncSolution.Invoke(null, null);
+                return;
+            }
+        }
+        catch
+        {
+            // ignored
+        }
+
+        // Fallback to menu command
+        EditorApplication.ExecuteMenuItem("Assets/Open C# Project");
+    }
+}
