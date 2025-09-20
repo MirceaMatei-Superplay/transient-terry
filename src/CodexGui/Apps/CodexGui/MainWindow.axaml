@@ -1,0 +1,452 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="CodexGui.Apps.CodexGui.MainWindow" Title="Transient Terry" Width="800" Height="700" MinWidth="600" MinHeight="500">
+    <Grid RowDefinitions="3*,Auto,2*">
+        <TabControl x:Name="tabControl" Grid.Row="0">
+            <TabItem Header="Remote Setup">
+                <ScrollViewer>
+                    <StackPanel Margin="24" Spacing="24">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Remote repository automation"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Fill in the repository and Unity details to run the guided setup."
+                                   Foreground="#BBBBBB"/>
+                    </StackPanel>
+
+                    <Border Padding="24"
+                            Background="#1F1F1F"
+                            BorderBrush="#323232"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,16,*">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Source Repo URL"/>
+                            <TextBox x:Name="setupSourceRepoUrlBox"
+                                     Grid.Row="0"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="360"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Target Repo URL"/>
+                            <TextBox x:Name="setupTargetRepoUrlBox"
+                                     Grid.Row="1"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="360"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="2"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Unity Path"/>
+                            <Grid Grid.Row="2" Grid.Column="2" Margin="0,0,0,16" ColumnDefinitions="*,Auto">
+                                <TextBox x:Name="unityPathBox"
+                                         Grid.Column="0"
+                                         HorizontalAlignment="Stretch"
+                                         MinWidth="360"/>
+                                <Button Grid.Column="1"
+                                        Margin="12,0,0,0"
+                                        Padding="16,6"
+                                        Content="Browse..."
+                                        Click="OnBrowseUnity"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="3"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Setup Source Branch"/>
+                            <ComboBox x:Name="setupSourceBox"
+                                      Grid.Row="3"
+                                      Grid.Column="2"
+                                      Margin="0,0,0,16"
+                                      MinWidth="240"
+                                      HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="4"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Setup Target Branch"/>
+                            <TextBox x:Name="setupTargetBox"
+                                     Grid.Row="4"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="240"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="5"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="GH_PAT"/>
+                            <TextBox x:Name="setupPatBox"
+                                     Grid.Row="5"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,24"
+                                     MinWidth="240"
+                                     HorizontalAlignment="Stretch"
+                                     PasswordChar="*"/>
+
+                            <StackPanel Grid.Row="6"
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                <Button x:Name="runSetupButton"
+                                        Padding="24,8"
+                                        MinWidth="180"
+                                        Content="Run Full Setup"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Export">
+            <ScrollViewer>
+                <StackPanel Margin="24" Spacing="24">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Submodule export"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Configure the repositories and branches to export your submodules."
+                                   Foreground="#BBBBBB"/>
+                    </StackPanel>
+
+                    <Border Padding="24"
+                            Background="#1F1F1F"
+                            BorderBrush="#323232"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                        <Grid ColumnDefinitions="Auto,16,*">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Source Repo URL"/>
+                            <TextBox x:Name="exportSourceRepoUrlBox"
+                                     Grid.Row="0"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="360"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Target Repo URL"/>
+                            <TextBox x:Name="exportTargetRepoUrlBox"
+                                     Grid.Row="1"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="360"
+                                     HorizontalAlignment="Stretch"/>
+
+                            <TextBlock Grid.Row="2"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Export Source Branch"/>
+                            <Grid Grid.Row="2"
+                                  Grid.Column="2"
+                                  Margin="0,0,0,16"
+                                  ColumnDefinitions="*,Auto">
+                                <ComboBox x:Name="exportSourceBox"
+                                          Grid.Column="0"
+                                          HorizontalAlignment="Stretch"
+                                          MinWidth="240"/>
+                                <Button x:Name="refreshExportSourceButton"
+                                        Grid.Column="1"
+                                        Margin="12,0,0,0"
+                                        Padding="16,6"
+                                        Content="Refresh"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="3"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="Export Target Branch"/>
+                            <Grid Grid.Row="3"
+                                  Grid.Column="2"
+                                  Margin="0,0,0,16"
+                                  ColumnDefinitions="*,Auto">
+                                <ComboBox x:Name="exportTargetBox"
+                                          Grid.Column="0"
+                                          HorizontalAlignment="Stretch"
+                                          MinWidth="240"/>
+                                <Button x:Name="refreshExportTargetButton"
+                                        Grid.Column="1"
+                                        Margin="12,0,0,0"
+                                        Padding="16,6"
+                                        Content="Refresh"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="4"
+                                       Grid.Column="0"
+                                       Margin="0,0,0,8"
+                                       VerticalAlignment="Center"
+                                       Text="GH_PAT"/>
+                            <TextBox x:Name="exportPatBox"
+                                     Grid.Row="4"
+                                     Grid.Column="2"
+                                     Margin="0,0,0,16"
+                                     MinWidth="240"
+                                     HorizontalAlignment="Stretch"
+                                     PasswordChar="*"/>
+
+                            <Button x:Name="checkDiffsButton"
+                                    Grid.Row="5"
+                                    Grid.Column="2"
+                                    Margin="0,0,0,16"
+                                    Padding="24,8"
+                                    MinWidth="180"
+                                    HorizontalAlignment="Right"
+                                    Content="Check Diffs"/>
+
+                            <StackPanel x:Name="submodulePanel"
+                                        Grid.Row="6"
+                                        Grid.Column="2"
+                                        Margin="0,0,0,16"/>
+
+                            <StackPanel Grid.Row="7"
+                                        Grid.Column="2"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right">
+                                <Button x:Name="runExportButton"
+                                        Padding="24,8"
+                                        MinWidth="180"
+                                        Content="Run Export"
+                                        IsEnabled="False"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Local Setup">
+            <ScrollViewer>
+                <StackPanel Margin="10">
+                    <TextBlock Text="Project Path"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="csprojProjectPathBox" Width="400"/>
+                        <Button Content="Browse..." Click="OnBrowseProject"/>
+                    </StackPanel>
+                    <CheckBox x:Name="csprojRunUnityBox" Content="Run Unity" IsChecked="True" Width="300"/>
+                    <CheckBox x:Name="csprojMakeCommitsBox" Content="Make commits" IsChecked="True" Width="300"/>
+                    <CheckBox x:Name="csprojPushWhenDoneBox" Content="Push when done" IsChecked="True" Width="300"/>
+                    <Button x:Name="runCsprojSetupButton" Content="Run CsprojSetup" Width="150"/>
+                    <Button x:Name="runFlattenButton" Content="Run Flatten" Width="150"/>
+                    <Button x:Name="runCsprojRelinkButton" Content="Run Csproj relink" Width="150"/>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+    </TabControl>
+        <GridSplitter Grid.Row="1"
+                      Height="6"
+                      Margin="24,0"
+                      Background="#1F1F1F"
+                      ShowsPreview="True"
+                      HorizontalAlignment="Stretch"/>
+        <Border Grid.Row="2"
+                Margin="24"
+                Padding="24"
+                Background="#141414"
+                BorderBrush="#323232"
+                BorderThickness="1"
+                CornerRadius="8">
+            <Grid RowDefinitions="*,Auto,*">
+                <Grid Grid.Row="0"
+                      RowDefinitions="Auto,*"
+                      MinHeight="96">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="Auto,16,*"
+                          Margin="0,0,0,12"
+                          VerticalAlignment="Center">
+                        <TextBlock Text="Activity Log"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock x:Name="logSummaryText"
+                                   Grid.Column="2"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   Foreground="#8A8A8A"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1"
+                                  x:Name="logScrollViewer"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="logItemsControl">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,0,12"
+                                            Padding="12"
+                                            Background="{Binding BackgroundBrush}"
+                                            BorderBrush="{Binding BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="8">
+                                        <StackPanel Spacing="6">
+                                            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                                <TextBlock Grid.Column="0"
+                                                           Text="{Binding Title}"
+                                                           FontWeight="SemiBold"/>
+                                                <TextBlock Grid.Column="1"
+                                                           Margin="8,0,0,0"
+                                                           Text="{Binding TimestampText}"
+                                                           Foreground="#7A7A7A"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Margin="8,0,0,0"
+                                                           Text="{Binding DurationDisplay}"
+                                                           Foreground="#BBBBBB"/>
+                                                <Button Grid.Column="3"
+                                                        Margin="8,0,0,0"
+                                                        Padding="4"
+                                                        Width="28"
+                                                        Height="28"
+                                                        Background="Transparent"
+                                                        BorderBrush="#3A3A3A"
+                                                        Click="OnCopyLogEntry"
+                                                        ToolTip.Tip="Copy entry to clipboard">
+                                                    <Path Width="16"
+                                                          Height="16"
+                                                          Stretch="Uniform"
+                                                          Fill="#E6E6E6"
+                                                          Data="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1z M19 5H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                                </Button>
+                                            </Grid>
+                                            <TextBlock Text="{Binding DisplayMessage}"
+                                                       TextWrapping="Wrap"
+                                                       Foreground="#E6E6E6"/>
+                                            <Button Content="{Binding ToggleButtonLabel}"
+                                                    Margin="0,4,0,0"
+                                                    Padding="8,2"
+                                                    HorizontalAlignment="Left"
+                                                    Background="Transparent"
+                                                    BorderBrush="#3A3A3A"
+                                                    IsVisible="{Binding ShowToggleButton}"
+                                                    Click="OnToggleLogMessage"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+                <GridSplitter Grid.Row="1"
+                              Height="6"
+                              Margin="0,12"
+                              Background="#1F1F1F"
+                              ShowsPreview="True"
+                              HorizontalAlignment="Stretch"/>
+                <Grid Grid.Row="2"
+                      RowDefinitions="Auto,*"
+                      MinHeight="72">
+                    <TextBlock Grid.Row="0"
+                               Text="Execution Summary"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,12"/>
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl x:Name="summaryItemsControl"
+                                      HorizontalAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,0,0,10"
+                                                Spacing="6"
+                                                HorizontalAlignment="Stretch"
+                                                ToolTip.ShowDelay="0">
+                                        <ToolTip.Tip>
+                                            <Border Padding="12"
+                                                    Background="#2B2B2B"
+                                                    CornerRadius="6">
+                                                <TextBlock Text="{Binding FullTitle}"
+                                                           FontSize="14"
+                                                           TextWrapping="Wrap"
+                                                           MaxWidth="400"/>
+                                            </Border>
+                                        </ToolTip.Tip>
+                                        <Grid ColumnDefinitions="*,Auto,Auto">
+                                            <TextBlock Grid.Column="0"
+                                                       Text="{Binding Title}"
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Margin="12,0,0,0"
+                                                       Text="{Binding DurationDisplay}"
+                                                       Foreground="#BBBBBB"/>
+                                            <Button Grid.Column="2"
+                                                    Margin="12,0,0,0"
+                                                    Padding="4"
+                                                    Width="28"
+                                                    Height="28"
+                                                    Background="Transparent"
+                                                    BorderBrush="#3A3A3A"
+                                                    Click="OnCopySummaryEntry"
+                                                    ToolTip.Tip="Copy summary to clipboard">
+                                                <Path Width="16"
+                                                      Height="16"
+                                                      Stretch="Uniform"
+                                                      Fill="#E6E6E6"
+                                                      Data="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1z M19 5H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                            </Button>
+                                        </Grid>
+                                        <Border Height="6"
+                                                Background="#1F1F1F"
+                                                CornerRadius="3"
+                                                HorizontalAlignment="Stretch">
+                                            <Border Height="6"
+                                                    Background="{Binding AccentBrush}"
+                                                    CornerRadius="3"
+                                                    Width="{Binding GraphWidth}"
+                                                    HorizontalAlignment="Left"/>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

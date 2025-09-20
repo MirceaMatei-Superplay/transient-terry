@@ -1,6 +1,6 @@
 using Octokit;
 using Common.Scripts;
-using System.Windows.Forms;
+using System;
 using System.Collections.Generic;
 
 namespace SubmodulesDeflattenerExport.Scripts
@@ -300,7 +300,7 @@ namespace SubmodulesDeflattenerExport.Scripts
                               " pay extra attention to this submodule when reviewing the PR.";
 
                 Logger.Write(message);
-                MessageBox.Show(message, "Submodule Checkout Warning");
+                Console.WriteLine(message);
             }
 
             if (_newBranches.TryGetValue(submodule.Name, out var newBranch))

@@ -41,7 +41,7 @@ public class CsprojRegen
         var args =
             $"-batchmode -quit -projectPath \"{_repoPath}\" " +
             "-executeMethod RegenerateProjectFiles.Regenerate";
-        RunUnity(args);
+        await RunUnity(args);
 
         var csMetaPath = csPath + ".meta";
         if (File.Exists(csMetaPath))
@@ -66,17 +66,21 @@ public class CsprojRegen
         }
     }
 
-    void RunUnity(string arguments)
+    async Task RunUnity(string arguments)
     {
-        Logger.Write(string.Format(Texts.RUNNING_COMMAND, _unityExe, arguments));
-        var (exitCode, output, error) = RunUnityProcess(arguments);
+        var commandLabel = string.Format("{0} {1}", _unityExe, arguments).Trim();
+        Logger.LogInfo(commandLabel, string.Format(Texts.RUNNING_COMMAND, _unityExe, arguments));
+        var stopwatch = Stopwatch.StartNew();
+        var (exitCode, output, error) = await RunUnityProcess(arguments);
 
         if (exitCode == Texts.UNITY_ALREADY_OPEN_EXIT_CODE)
         {
-            Logger.Write(Texts.KILLING_UNITY_PROCESS);
+            Logger.LogWarning(commandLabel, Texts.KILLING_UNITY_PROCESS);
             KillUnityProcesses();
-            (exitCode, output, error) = RunUnityProcess(arguments);
+            (exitCode, output, error) = await RunUnityProcess(arguments);
         }
+
+        stopwatch.Stop();
 
         var consoleOut = exitCode != 0
             ? string.IsNullOrEmpty(error) ? output : error
@@ -84,13 +88,15 @@ public class CsprojRegen
         var message = string.Format(Texts.COMMAND_EXITED_TEMPLATE, exitCode, arguments);
         if (string.IsNullOrEmpty(consoleOut) == false)
             message += string.Format(Texts.OUTPUT_TEMPLATE, consoleOut);
-        Logger.Write(message);
+
+        var level = exitCode == 0 ? LogLevel.Success : LogLevel.Error;
+        Logger.LogOperationResult(commandLabel, message, stopwatch.Elapsed, level);
 
         if (exitCode != 0)
             throw new InvalidOperationException(message);
     }
 
-    (int exitCode, string output, string error) RunUnityProcess(string arguments)
+    async Task<(int exitCode, string output, string error)> RunUnityProcess(string arguments)
     {
         var psi = new ProcessStartInfo(_unityExe, arguments)
         {
@@ -103,9 +109,12 @@ public class CsprojRegen
 
         var stdoutTask = process.StandardOutput.ReadToEndAsync();
         var stderrTask = process.StandardError.ReadToEndAsync();
-        process.WaitForExit();
-        Task.WaitAll(stdoutTask, stderrTask);
-        return (process.ExitCode, stdoutTask.Result, stderrTask.Result);
+        await process.WaitForExitAsync();
+        await Task.WhenAll(stdoutTask, stderrTask);
+
+        var output = await stdoutTask;
+        var error = await stderrTask;
+        return (process.ExitCode, output, error);
     }
 
     static void KillUnityProcesses()

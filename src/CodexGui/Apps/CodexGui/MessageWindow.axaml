@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CodexGui.Apps.CodexGui.MessageWindow"
+        Title="Message"
+        Width="380"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowActivated="False"
+        ShowInTaskbar="False"
+        TransparencyLevelHint="Mica">
+    <Border Background="#1E1E1E" Padding="24" CornerRadius="12" BorderThickness="1" BorderBrush="#2B2B2B">
+        <StackPanel Spacing="16">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <Border x:Name="iconContainer" Width="44" Height="44" CornerRadius="22" Background="#214329"
+                        VerticalAlignment="Center">
+                    <TextBlock x:Name="iconText" Text="ℹ" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"
+                               Foreground="#42D77D" FontWeight="Bold"/>
+                </Border>
+
+                <TextBlock x:Name="headerText" Text="Message" FontSize="20" FontWeight="SemiBold" Foreground="#FFFFFF"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock x:Name="messageText" Foreground="#D9D9D9" TextWrapping="Wrap"/>
+
+            <Button Content="OK" Width="120" HorizontalAlignment="Center" Click="OnClose" Background="#42D77D"
+                    Foreground="#0D1F16" Padding="8" FontWeight="SemiBold"/>
+        </StackPanel>
+    </Border>
+</Window>

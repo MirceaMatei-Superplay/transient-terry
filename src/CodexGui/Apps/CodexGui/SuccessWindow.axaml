@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="CodexGui.Apps.CodexGui.SuccessWindow" Width="380" Height="220" Title="Success"
+        TransparencyLevelHint="Mica" WindowStartupLocation="CenterOwner" CanResize="False"
+        ShowActivated="False" ShowInTaskbar="False">
+    <Border Background="#1E1E1E" Padding="20" CornerRadius="12" BorderThickness="1" BorderBrush="#2B2B2B">
+        <StackPanel Spacing="16">
+            <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+                <Border Width="42" Height="42" CornerRadius="21" Background="#214329" VerticalAlignment="Center">
+                    <TextBlock Text="✔" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24"
+                               Foreground="#42D77D" FontWeight="Bold"/>
+                </Border>
+
+                <StackPanel>
+                    <TextBlock Text="Success" FontSize="20" FontWeight="SemiBold" Foreground="#FFFFFF"/>
+                    <TextBlock x:Name="messageText" Foreground="#D9D9D9" TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border Background="#252525" CornerRadius="8" Padding="12">
+                <TextBlock x:Name="link" TextDecorations="Underline" Foreground="#7AB8FF" Cursor="Hand"
+                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis"/>
+            </Border>
+
+            <Button Content="OK" Width="120" HorizontalAlignment="Center" Click="OnClose"
+                    HorizontalContentAlignment="Center" Background="#42D77D" Foreground="#0D1F16" Padding="8"
+                    FontWeight="SemiBold"/>
+        </StackPanel>
+    </Border>
+</Window>

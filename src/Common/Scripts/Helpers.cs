@@ -27,7 +27,8 @@ namespace Common.Scripts
 
         static async Task<(T result, string message)> RunProcess<T>(string fileName, string arguments, Func<int, string, string, T> selector, string? pat)
         {
-            Logger.Write(string.Format(Texts.RUNNING_COMMAND, fileName, arguments));
+            var commandLabel = string.Format("{0} {1}", fileName, arguments).Trim();
+            Logger.LogInfo(commandLabel, string.Format(Texts.RUNNING_COMMAND, fileName, arguments));
             var psi = new ProcessStartInfo(fileName, arguments)
             {
                 RedirectStandardOutput = true,
@@ -39,8 +40,10 @@ namespace Common.Scripts
             if (string.IsNullOrEmpty(pat) == false)
                 psi.Environment[Texts.GITHUB_TOKEN_ENV] = pat;
 
-            using var process = Process.Start(psi) ??
-                              throw new InvalidOperationException(Texts.FAILED_TO_START_PROCESS);
+            var stopwatch = Stopwatch.StartNew();
+
+            using var process = Process.Start(psi)
+                              ?? throw new InvalidOperationException(Texts.FAILED_TO_START_PROCESS);
 
             var stdoutTask = process.StandardOutput.ReadToEndAsync();
             var stderrTask = process.StandardError.ReadToEndAsync();
@@ -48,11 +51,15 @@ namespace Common.Scripts
             var output = await stdoutTask;
             var error = await stderrTask;
 
+            stopwatch.Stop();
+
             var writeMessage = string.Format(Texts.COMMAND_EXITED_TEMPLATE, process.ExitCode, arguments);
             var consoleOut = process.ExitCode != 0 ? error : output;
             if (string.IsNullOrEmpty(consoleOut) == false)
                 writeMessage += string.Format(Texts.OUTPUT_TEMPLATE, consoleOut);
-            Logger.Write(writeMessage);
+
+            var level = process.ExitCode == 0 ? LogLevel.Success : LogLevel.Error;
+            Logger.LogOperationResult(commandLabel, writeMessage, stopwatch.Elapsed, level);
 
             var result = selector(process.ExitCode, output.Trim(), error.Trim());
             return (result, writeMessage);

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 
 namespace CodexGui.Apps.CodexGui;
@@ -18,6 +20,8 @@ public class GuiSettings
     public bool CsprojMakeCommits { get; set; } = true;
     public bool CsprojPushWhenDone { get; set; } = true;
     public string Pat { get; set; } = string.Empty;
+    public Dictionary<string, SubmoduleExportSettings> ExportSubmoduleSettings { get; set; }
+        = new();
 
     public static GuiSettings Load(string path)
     {
@@ -33,6 +37,7 @@ public class GuiSettings
                 settings.CsprojMakeCommits = true;
             if (json.Contains("CsprojPushWhenDone") == false)
                 settings.CsprojPushWhenDone = true;
+            settings.ExportSubmoduleSettings ??= new Dictionary<string, SubmoduleExportSettings>();
             return settings;
         }
 
@@ -56,8 +61,20 @@ public class GuiSettings
             CsprojProjectPath = CsprojProjectPath,
             CsprojRunUnity = CsprojRunUnity,
             CsprojMakeCommits = CsprojMakeCommits,
-            CsprojPushWhenDone = CsprojPushWhenDone
+            CsprojPushWhenDone = CsprojPushWhenDone,
+            ExportSubmoduleSettings = ExportSubmoduleSettings.ToDictionary(
+                pair => pair.Key,
+                pair => new SubmoduleExportSettings
+                {
+                    BaseBranch = pair.Value.BaseBranch ?? string.Empty,
+                    NewBranchName = pair.Value.NewBranchName ?? string.Empty,
+                    IsCreatingNewBranch = pair.Value.IsCreatingNewBranch
+                })
         };
+
+        var directory = Path.GetDirectoryName(path);
+        if (string.IsNullOrEmpty(directory) == false)
+            Directory.CreateDirectory(directory);
 
         var json = JsonSerializer.Serialize(clone);
         File.WriteAllText(path, json);
