@@ -58,7 +58,7 @@ namespace Common.Scripts
         public const string SQUASH_COMMIT_MESSAGE = "Squashed commit from codex export";
         public const string SQUASH_MERGE_COMMIT_MESSAGE = "Squash merge temp branch";
         public const string SUBMODULE_PR_BODY_TEMPLATE = "Rewiring for dev environment\n{0}";
-        public const string COMMIT_SUBJECT_TEMPLATE = "Codex flatten step {0}";
+        public const string COMMIT_SUBJECT_DEFLATTEN_TEMPLATE = "Codex deflatten step {0}";
         public const string USAGE = "Usage: codex-exporter <source-repo-url> <target-repo-url> <source-branch> <target-branch>";
         public const string STARTING_REWIRING_TEMPLATE = "Starting rewiring for {0}";
         public const string REWIRING_FINISHED = "Rewiring tool finished";

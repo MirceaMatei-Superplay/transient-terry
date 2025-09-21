@@ -47,8 +47,14 @@ namespace SubmodulesDeflattenerExport.Scripts
 
             BackupFiles(_mainRepoPath);
 
-            await FetchBranch(_mainRepoPath, _sourceRepoUrl, _sourceBranch);
+            if(checkDiffs == true)
+                await FetchBranch(_mainRepoPath, _sourceRepoUrl, _sourceBranch);
+            
+            var tempBranch = $"temp-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+            await Helpers.CreateAndCheckoutBranch(_mainRepoPath, tempBranch, _pat, true);
             await ResetHardToBranch(_mainRepoPath, _sourceBranch);
+            await CheckoutBranch(_mainRepoPath, _sourceBranch);
+            await Helpers.DeleteBranchIfExists(_mainRepoPath, tempBranch, _pat);
 
             string? branch = null;
             if (checkDiffs == false)
@@ -289,7 +295,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
             }
 
             var exceptionCode = await Helpers.RunGit($"-C {path} checkout {sha}", _pat).SuppressGitException();
@@ -365,15 +371,16 @@ namespace SubmodulesDeflattenerExport.Scripts
         private async Task CommitAndPush(string repoPath, string branch, int step, string details)
         {
             await Helpers.RunGit($"-C {repoPath} add .", _pat);
-            var subject = string.Format(Texts.COMMIT_SUBJECT_TEMPLATE, step);
-            await Helpers.RunGit($"-C {repoPath} commit -m \"{subject}\" -m \"{details}\"", _pat);
+            var subject = string.Format(Texts.COMMIT_SUBJECT_DEFLATTEN_TEMPLATE, step);
+            // There might be nothing to commit, but we could have something to push so suppress the exception.
+            await Helpers.RunGit($"-C {repoPath} commit -m \"{subject}\" -m \"{details}\"", _pat).SuppressGitException();
             await Helpers.RunGit($"-C {repoPath} push -u origin {branch}", _pat);
         }
 
         private async Task Commit(string repoPath, int step, string details)
         {
             await Helpers.RunGit($"-C {repoPath} add .", _pat);
-            var subject = string.Format(Texts.COMMIT_SUBJECT_TEMPLATE, step);
+            var subject = string.Format(Texts.COMMIT_SUBJECT_DEFLATTEN_TEMPLATE, step);
             await Helpers.RunGit($"-C {repoPath} commit -m \"{subject}\" -m \"{details}\"", _pat);
         }
 
@@ -455,8 +462,6 @@ namespace SubmodulesDeflattenerExport.Scripts
 
             var result = await CollectChangedSubmodules(_mainRepoPath, mergeBase, string.Empty, false);
 
-            Helpers.DeleteDirectory(_mainRepoPath);
-
             return result;
         }
 
@@ -502,7 +507,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
             }
 
             var exceptionCode = await Helpers.RunGit($"-C {path} checkout {sha}", _pat).SuppressGitException();

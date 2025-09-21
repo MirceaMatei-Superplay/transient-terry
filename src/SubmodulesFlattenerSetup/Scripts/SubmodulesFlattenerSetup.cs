@@ -27,7 +27,7 @@ public class SubmodulesFlattenerSetup
         _repoPath = Path.Combine(runtime, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER, repoName);
     }
 
-    public async Task Run()
+    public async Task<bool> Run()
     {
         await CloneRepository(_targetRepoUrl, _repoPath);
         // Moving to unique temp so that we avoid error 128 while fetching the branch.
@@ -41,7 +41,7 @@ public class SubmodulesFlattenerSetup
         {
             Logger.Write("Submodules flattening skipped because the target branch already exists. " +
                 "Delete the branch and rerun to continue setup.");
-            return;
+            return false;
         }
 
         var regen = new CsprojRegen(_unityPath, _repoPath);
@@ -49,6 +49,8 @@ public class SubmodulesFlattenerSetup
 
         var tool = new CsprojSetupTool(_repoPath);
         await tool.Setup();
+
+        return true;
     }
 
     async Task CloneRepository(string url, string path)

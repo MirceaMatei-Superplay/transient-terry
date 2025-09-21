@@ -226,7 +226,7 @@ namespace SubmodulesDeflattenerImport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
             }
 
             await Helpers.RunGit($"-C {path} checkout {sha}", _pat);
@@ -259,7 +259,7 @@ namespace SubmodulesDeflattenerImport.Scripts
         private async Task Commit(string repoPath, int step, string details)
         {
             await Helpers.RunGit($"-C {repoPath} add .", _pat);
-            var subject = string.Format(Texts.COMMIT_SUBJECT_TEMPLATE, step);
+            var subject = string.Format(Texts.COMMIT_SUBJECT_DEFLATTEN_TEMPLATE, step);
             await Helpers.RunGit($"-C {repoPath} commit -m \"{subject}\" -m \"{details}\"", _pat);
         }
 

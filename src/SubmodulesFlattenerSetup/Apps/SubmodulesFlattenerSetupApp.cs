@@ -30,9 +30,11 @@ static class SubmodulesFlattenerSetupApp
         var setup = new SetupRunner(unityPath, sourceRepoUrl,
             targetRepoUrl, sourceBranch, targetBranch, pat);
 
+        var isSetupCompleted = true;
+
         try
         {
-            await setup.Run();
+            isSetupCompleted = await setup.Run();
         }
         catch (Exception e)
         {
@@ -40,7 +42,8 @@ static class SubmodulesFlattenerSetupApp
             throw;
         }
 
-        Logger.Write(Texts.SETUP_FINISHED);
+        if (isSetupCompleted)
+            Logger.Write(Texts.SETUP_FINISHED);
 
         return 0;
     }
