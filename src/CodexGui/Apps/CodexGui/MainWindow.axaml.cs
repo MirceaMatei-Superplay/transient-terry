@@ -506,9 +506,10 @@ public partial class MainWindow : Window
     {
         SaveSettings();
 
-        var runtime = Helpers.PrepareRuntime();
-        var repoName = RepoUtils.GetRepoName(_settings.SetupTargetRepoUrl);
-        var repoPath = Path.Combine(runtime, repoName);
+        var repoPath = Helpers.GetRuntimeRepositoryPath(
+            Texts.REMOTE_SETUP_FOLDER,
+            Texts.TARGET_FOLDER,
+            _settings.SetupTargetRepoUrl);
 
         await CloneRepository(_settings.SetupTargetRepoUrl, repoPath);
         var tempBranch = $"temp-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
@@ -621,10 +622,7 @@ public partial class MainWindow : Window
     }
 
     async Task CloneRepository(string url, string path)
-    {
-        Logger.Write(string.Format(Texts.CLONING_REPOSITORY, url, path));
-        await Helpers.RunGit(string.Format(Texts.CLONE_COMMAND, url, path), _settings.Pat);
-    }
+        => await Helpers.PrepareRepositoryCache(url, path, _settings.Pat);
 
     async Task FetchBranch(string path, string url, string branch)
     {

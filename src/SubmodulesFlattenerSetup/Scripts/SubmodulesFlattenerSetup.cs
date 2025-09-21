@@ -22,15 +22,13 @@ public class SubmodulesFlattenerSetup
         _targetBranch = targetBranch;
         _pat = pat;
 
-        var runtime = PrepareRuntime();
+        var runtime = Helpers.PrepareRuntime();
         var repoName = RepoUtils.GetRepoName(targetRepoUrl);
-        _repoPath = Path.Combine(runtime, repoName);
+        _repoPath = Path.Combine(runtime, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER, repoName);
     }
 
     public async Task Run()
     {
-        Helpers.PrepareRuntime();
-        
         await CloneRepository(_targetRepoUrl, _repoPath);
         // Moving to unique temp so that we avoid error 128 while fetching the branch.
         var tempBranch = $"temp-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
@@ -47,23 +45,8 @@ public class SubmodulesFlattenerSetup
         await tool.Setup();
     }
 
-    static string PrepareRuntime()
-    {
-        Logger.Write(Texts.PREPARING_RUNTIME_FOLDER);
-        if (Directory.Exists(Texts.RUNTIME_FOLDER))
-            Helpers.DeleteDirectory(Texts.RUNTIME_FOLDER);
-
-        Directory.CreateDirectory(Texts.RUNTIME_FOLDER);
-        var path = Path.GetFullPath(Texts.RUNTIME_FOLDER);
-        Logger.Write(string.Format(Texts.RUNTIME_FOLDER_READY, path));
-        return path;
-    }
-
     async Task CloneRepository(string url, string path)
-    {
-        Logger.Write(string.Format(Texts.CLONING_REPOSITORY, url, path));
-        await Helpers.RunGit(string.Format(Texts.CLONE_COMMAND, url, path), _pat);
-    }
+        => await Helpers.PrepareRepositoryCache(url, path, _pat);
 
     async Task FetchBranch(string path, string url, string branch)
     {

@@ -36,7 +36,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             var repoName = RepoUtils.GetRepoName(targetRepoUrl);
             Logger.Write(string.Format(Texts.REPOSITORY_NAME_RESOLVED, repoName));
 
-            _mainRepoPath = Path.Combine(runtime, repoName);
+            _mainRepoPath = Path.Combine(runtime, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER, repoName);
         }
 
         async Task<string?> PrepareMainRepo(bool checkDiffs)
@@ -95,10 +95,7 @@ namespace SubmodulesDeflattenerExport.Scripts
         }
 
         private async Task CloneRepository(string url, string path)
-        {
-            Logger.Write(string.Format(Texts.CLONING_REPOSITORY, url, path));
-            await Helpers.RunGit(string.Format(Texts.CLONE_COMMAND, url, path), _pat);
-        }
+            => await Helpers.PrepareRepositoryCache(url, path, _pat);
 
         private async Task CheckoutBranch(string path, string branch)
         {
@@ -115,8 +112,7 @@ namespace SubmodulesDeflattenerExport.Scripts
         private static void BackupFiles(string path)
         {
             Logger.Write(Texts.BACKING_UP_FILES);
-            var temp = Path.Combine(Texts.RUNTIME_FOLDER, Texts.TEMP_FOLDER);
-            Directory.CreateDirectory(temp);
+            var temp = Helpers.PrepareTempFolder();
             File.Copy(Path.Combine(path, Texts.DOT_GITIGNORE),
                 Path.Combine(temp, Texts.DOT_GITIGNORE), true);
             var modules = Path.Combine(path, Texts.DOT_GITMODULES);
@@ -186,7 +182,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             if (Directory.Exists(source) == false)
                 return;
 
-            var dest = Path.Combine(Texts.RUNTIME_FOLDER, Texts.TEMP_FOLDER, Texts.SHARED_COPY_FOLDER);
+            var dest = Path.Combine(Helpers.GetTempFolderPath(), Texts.SHARED_COPY_FOLDER);
             Helpers.CopyDirectory(source, dest);
 
             Helpers.DeleteDirectory(source);
@@ -204,7 +200,7 @@ namespace SubmodulesDeflattenerExport.Scripts
 
         private static void RestoreGitFiles(string repoPath)
         {
-            var temp = Path.Combine(Texts.RUNTIME_FOLDER, Texts.TEMP_FOLDER);
+            var temp = Helpers.GetTempFolderPath();
             foreach (var file in new[] { Texts.DOT_GITIGNORE, Texts.DOT_GITMODULES })
             {
                 var source = Path.Combine(temp, file);
@@ -219,7 +215,7 @@ namespace SubmodulesDeflattenerExport.Scripts
 
         private static void RestoreSharedMetaFiles(string repoPath)
         {
-            var source = Path.Combine(Texts.RUNTIME_FOLDER, Texts.TEMP_FOLDER, Texts.SHARED_COPY_FOLDER);
+            var source = Path.Combine(Helpers.GetTempFolderPath(), Texts.SHARED_COPY_FOLDER);
             var dest = Path.Combine(repoPath, Texts.ASSETS_FOLDER, Texts.SHARED_FOLDER);
 
             if (Directory.Exists(source) == false)
@@ -233,8 +229,8 @@ namespace SubmodulesDeflattenerExport.Scripts
                 File.Copy(file, target, true);
             }
 
-            var sharedModulesSource = Path.Combine(Texts.RUNTIME_FOLDER,
-                Texts.TEMP_FOLDER, Texts.SHARED_GITMODULES_TEMP);
+            var sharedModulesSource = Path.Combine(Helpers.GetTempFolderPath(),
+                Texts.SHARED_GITMODULES_TEMP);
             var sharedModulesDest = Path.Combine(dest, Texts.DOT_GITMODULES);
             if (File.Exists(sharedModulesSource))
             {
@@ -311,8 +307,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             await Helpers.CreateAndCheckoutBranch(path, branch, _pat, true);
 
             var shared = Path.Combine(
-                Texts.RUNTIME_FOLDER,
-                Texts.TEMP_FOLDER,
+                Helpers.GetTempFolderPath(),
                 Texts.SHARED_COPY_FOLDER,
                 sharedRelativePath);
             
@@ -520,8 +515,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             await Helpers.CreateAndCheckoutBranch(path, branch, _pat, true);
 
             var shared = Path.Combine(
-                Texts.RUNTIME_FOLDER,
-                Texts.TEMP_FOLDER,
+                Helpers.GetTempFolderPath(),
                 Texts.SHARED_COPY_FOLDER,
                 sharedRelativePath);
 

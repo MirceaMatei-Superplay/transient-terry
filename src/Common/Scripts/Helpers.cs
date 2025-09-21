@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 
 namespace Common.Scripts
@@ -271,13 +272,134 @@ namespace Common.Scripts
         public static string PrepareRuntime()
         {
             Logger.Write(Texts.PREPARING_RUNTIME_FOLDER);
-            if (Directory.Exists(Texts.RUNTIME_FOLDER))
-                DeleteDirectory(Texts.RUNTIME_FOLDER);
-
             Directory.CreateDirectory(Texts.RUNTIME_FOLDER);
             var path = Path.GetFullPath(Texts.RUNTIME_FOLDER);
+
+            var folders = new[]
+            {
+                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER),
+                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.SOURCE_FOLDER),
+                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER),
+                Path.Combine(path, Texts.EXPORT_FOLDER),
+                Path.Combine(path, Texts.EXPORT_FOLDER, Texts.SOURCE_FOLDER),
+                Path.Combine(path, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER)
+            };
+
+            foreach (var folder in folders)
+                Directory.CreateDirectory(folder);
+
             Logger.Write(string.Format(Texts.RUNTIME_FOLDER_READY, path));
             return path;
+        }
+
+        public static string GetRuntimeRepositoryPath(string scope, string role, string repoUrl)
+        {
+            var runtime = PrepareRuntime();
+            var basePath = Path.Combine(runtime, scope, role);
+            Directory.CreateDirectory(basePath);
+            var repoName = RepoUtils.GetRepoName(repoUrl);
+            return Path.Combine(basePath, repoName);
+        }
+
+        public static string PrepareTempFolder()
+        {
+            var runtime = PrepareRuntime();
+            var temp = Path.Combine(runtime, Texts.TEMP_FOLDER);
+            if (Directory.Exists(temp))
+                DeleteDirectory(temp);
+
+            Directory.CreateDirectory(temp);
+            return temp;
+        }
+
+        public static string GetTempFolderPath()
+        {
+            var runtime = Path.GetFullPath(Texts.RUNTIME_FOLDER);
+            var temp = Path.Combine(runtime, Texts.TEMP_FOLDER);
+            if (Directory.Exists(temp) == false)
+                Directory.CreateDirectory(temp);
+
+            return temp;
+        }
+
+        public static async Task PrepareRepositoryCache(string url, string path, string? pat = null)
+        {
+            var parent = Path.GetDirectoryName(path);
+            if (string.IsNullOrEmpty(parent) == false)
+                Directory.CreateDirectory(parent);
+
+            var shouldClone = true;
+            var gitDirectory = Path.Combine(path, ".git");
+
+            if (Directory.Exists(path) && Directory.Exists(gitDirectory))
+            {
+                var remoteUrl = await RunGitCapture($"-C {path} remote get-url origin", pat);
+                if (AreRepositoryUrlsEqual(remoteUrl, url))
+                {
+                    Logger.Write(string.Format(Texts.RESETTING_CACHED_REPOSITORY, path));
+                    await RunGit($"-C {path} remote set-url origin {url}", pat);
+                    await RunGit($"-C {path} reset --hard", pat);
+                    await RunGit($"-C {path} clean -xfd", pat);
+                    await RunGit($"-C {path} fetch origin", pat);
+                    Logger.Write(string.Format(Texts.REUSING_CACHED_REPOSITORY, path));
+                    shouldClone = false;
+                }
+                else
+                {
+                    Logger.Write(string.Format(Texts.CLEARING_CACHED_REPOSITORY, path));
+                    DeleteDirectory(path);
+                }
+            }
+            else if (Directory.Exists(path))
+            {
+                Logger.Write(string.Format(Texts.CLEARING_CACHED_REPOSITORY, path));
+                DeleteDirectory(path);
+            }
+
+            if (shouldClone)
+            {
+                Logger.Write(string.Format(Texts.CLONING_REPOSITORY, url, path));
+                await RunGit(string.Format(Texts.CLONE_COMMAND, url, path), pat);
+            }
+        }
+
+        static bool AreRepositoryUrlsEqual(string first, string second)
+        {
+            var normalizedFirst = NormalizeRepositoryUrl(first);
+            var normalizedSecond = NormalizeRepositoryUrl(second);
+            return string.Equals(normalizedFirst, normalizedSecond, StringComparison.OrdinalIgnoreCase);
+        }
+
+        static string NormalizeRepositoryUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return string.Empty;
+
+            var trimmed = url.Trim();
+
+            if (Uri.TryCreate(trimmed, UriKind.Absolute, out var uri))
+            {
+                var path = uri.AbsolutePath.Trim('/');
+                if (path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                    path = path[..^4];
+
+                return string.Format("{0}/{1}", uri.Host, path).ToLowerInvariant();
+            }
+
+            var sshIndex = trimmed.IndexOf(':');
+            if (sshIndex >= 0)
+            {
+                var path = trimmed[(sshIndex + 1)..].Trim('/');
+                if (path.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                    path = path[..^4];
+
+                return path.ToLowerInvariant();
+            }
+
+            if (trimmed.EndsWith(".git", StringComparison.OrdinalIgnoreCase))
+                trimmed = trimmed[..^4];
+
+            return trimmed.Trim('/').ToLowerInvariant();
         }
     }
 }

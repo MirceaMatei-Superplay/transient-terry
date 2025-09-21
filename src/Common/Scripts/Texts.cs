@@ -22,11 +22,18 @@ namespace Common.Scripts
         public const string SWITCHING_OUT_STATUS = "Switching from {0} to {1}";
         
         public const string RUNTIME_FOLDER = "runtime";
+        public const string REMOTE_SETUP_FOLDER = "RemoteSetup";
+        public const string EXPORT_FOLDER = "Export";
+        public const string SOURCE_FOLDER = "Source";
+        public const string TARGET_FOLDER = "Target";
         public const string TEMP_REWIRE_BRANCH_TEMPLATE = "codex/temp/rewire-{0}";
         public const string REMOVE_CODEX_FILES_DETAILS = "Remove codex required files and restore .gitignore settings for main development branch";
         public const string UPDATE_SUBMODULES_DETAILS = "Update submodules and restore shared meta files";
         public const string PREPARING_RUNTIME_FOLDER = "Preparing runtime folder";
         public const string RUNTIME_FOLDER_READY = "Runtime folder ready at {0}";
+        public const string RESETTING_CACHED_REPOSITORY = "Resetting cached repository at {0}";
+        public const string REUSING_CACHED_REPOSITORY = "Reusing cached repository at {0}";
+        public const string CLEARING_CACHED_REPOSITORY = "Clearing cached repository at {0}";
         public const string BACKING_UP_FILES = "Backing up .gitignore and .gitmodules files";
         public const string TEMP_FOLDER = "temp";
         public const string DOT_GITIGNORE = ".gitignore";
