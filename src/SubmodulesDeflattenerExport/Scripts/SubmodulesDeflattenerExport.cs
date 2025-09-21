@@ -48,7 +48,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             BackupFiles(_mainRepoPath);
 
             await FetchBranch(_mainRepoPath, _sourceRepoUrl, _sourceBranch);
-            await CheckoutBranch(_mainRepoPath, _sourceBranch);
+            await ResetHardToBranch(_mainRepoPath, _sourceBranch);
 
             string? branch = null;
             if (checkDiffs == false)
@@ -101,6 +101,12 @@ namespace SubmodulesDeflattenerExport.Scripts
         {
             Logger.Write(string.Format(Texts.CHECKING_OUT_STATUS, branch, path));
             await Helpers.RunGit(string.Format(Texts.CHECKING_OUT, path, branch), _pat);
+        }
+
+        private async Task ResetHardToBranch(string path, string branch)
+        {
+            Logger.Write(string.Format(Texts.RESETTING_HARD_STATUS, branch, path));
+            await Helpers.RunGit(string.Format(Texts.RESETTING_HARD, path, branch), _pat);
         }
 
         private async Task FetchBranch(string path, string url, string branch)

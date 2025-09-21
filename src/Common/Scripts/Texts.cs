@@ -20,6 +20,8 @@ namespace Common.Scripts
         public const string RUNNING_COMMAND = "Running command: {0} {1}";
         public const string CHECKING_OUT_STATUS = "Checking out {0} in {1}";
         public const string SWITCHING_OUT_STATUS = "Switching from {0} to {1}";
+        public const string RESETTING_HARD = "-C {0} reset --hard {1}";
+        public const string RESETTING_HARD_STATUS = "Resetting hard to {0} in {1}";
         
         public const string RUNTIME_FOLDER = "runtime";
         public const string REMOTE_SETUP_FOLDER = "RemoteSetup";
