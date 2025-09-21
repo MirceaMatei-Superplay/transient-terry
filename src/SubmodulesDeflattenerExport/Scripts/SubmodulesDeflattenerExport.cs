@@ -47,8 +47,7 @@ namespace SubmodulesDeflattenerExport.Scripts
 
             BackupFiles(_mainRepoPath);
 
-            if(checkDiffs == true)
-                await FetchBranch(_mainRepoPath, _sourceRepoUrl, _sourceBranch);
+            await FetchBranch(_mainRepoPath, _sourceRepoUrl, _sourceBranch);
             
             var tempBranch = $"temp-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
             await Helpers.CreateAndCheckoutBranch(_mainRepoPath, tempBranch, _pat, true);
@@ -295,7 +294,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
             }
 
             var exceptionCode = await Helpers.RunGit($"-C {path} checkout {sha}", _pat).SuppressGitException();
@@ -462,6 +461,8 @@ namespace SubmodulesDeflattenerExport.Scripts
 
             var result = await CollectChangedSubmodules(_mainRepoPath, mergeBase, string.Empty, false);
 
+            Helpers.DeleteDirectory(_mainRepoPath);
+            
             return result;
         }
 
@@ -507,7 +508,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
             }
 
             var exceptionCode = await Helpers.RunGit($"-C {path} checkout {sha}", _pat).SuppressGitException();

@@ -226,7 +226,7 @@ namespace SubmodulesDeflattenerImport.Scripts
             }
             else
             {
-                await Helpers.RunGit($"-C {repoPath} submodule add --force {submodule.Url} {submodule.Path}", _pat);
+                await Helpers.RunGit($"-C {repoPath} submodule add {submodule.Url} {submodule.Path}", _pat);
             }
 
             await Helpers.RunGit($"-C {path} checkout {sha}", _pat);
