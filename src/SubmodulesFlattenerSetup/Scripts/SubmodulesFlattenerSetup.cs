@@ -36,7 +36,13 @@ public class SubmodulesFlattenerSetup
         await FetchBranch(_repoPath, _sourceRepoUrl, _sourceBranch);
 
         var flattener = new SubmodulesFlattener(_pat);
-        await flattener.Run(_repoPath, _sourceBranch, _targetBranch);
+        var isFlattened = await flattener.Run(_repoPath, _sourceBranch, _targetBranch);
+        if (isFlattened == false)
+        {
+            Logger.Write("Submodules flattening skipped because the target branch already exists. " +
+                "Delete the branch and rerun to continue setup.");
+            return;
+        }
 
         var regen = new CsprojRegen(_unityPath, _repoPath);
         await regen.Run();

@@ -13,13 +13,13 @@ public class SubmodulesFlattener
         _pat = pat;
     }
 
-    public async Task Run(string repoPath, string sourceBranch, string targetBranch)
+    public async Task<bool> Run(string repoPath, string sourceBranch, string targetBranch)
     {
         var localBranch = await Helpers.RunGitCapture($"-C {repoPath} branch --list {targetBranch}", _pat);
         if (string.IsNullOrEmpty(localBranch) == false)
         {
             Logger.Write(string.Format(Texts.BRANCH_EXISTS, targetBranch));
-            return;
+            return false;
         }
 
         await Helpers.RunGit($"-C {repoPath} reset --hard", _pat);
@@ -40,6 +40,8 @@ public class SubmodulesFlattener
         // var mergeExitCode = RunGit($"-C {repoPath} merge {targetBranch}");
         // if (mergeExitCode == 0)
         //     RunGit($"-C {repoPath} push origin {Texts.CODEX_MAIN_BRANCH}");
+
+        return true;
     }
 
     private async Task Flatten(string repoPath)
