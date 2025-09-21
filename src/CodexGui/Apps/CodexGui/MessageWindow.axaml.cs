@@ -59,4 +59,17 @@ public partial class MessageWindow : Window
 
     void OnClose(object? sender, RoutedEventArgs e)
         => Close();
+
+    async void OnCopyMessage(object? sender, RoutedEventArgs e)
+    {
+        var text = _messageText.Text;
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel?.Clipboard == null)
+            return;
+
+        await topLevel.Clipboard.SetTextAsync(text);
+    }
 }
