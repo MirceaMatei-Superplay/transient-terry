@@ -79,6 +79,7 @@ public partial class MainWindow : Window
     ItemsControl _summaryItemsControl = null!;
     ScrollViewer _logScrollViewer = null!;
     TextBlock _logSummaryText = null!;
+    MessageOverlay _messageOverlay = null!;
     IDisposable? _summaryBoundsSubscription;
 
     public MainWindow()
@@ -125,6 +126,7 @@ public partial class MainWindow : Window
         _summaryItemsControl = this.FindControl<ItemsControl>("summaryItemsControl")!;
         _logScrollViewer = this.FindControl<ScrollViewer>("logScrollViewer")!;
         _logSummaryText = this.FindControl<TextBlock>("logSummaryText")!;
+        _messageOverlay = this.FindControl<MessageOverlay>("messageOverlay")!;
     }
 
     async void OnBrowseUnity(object? sender, RoutedEventArgs e)
@@ -776,10 +778,7 @@ public partial class MainWindow : Window
         string iconGlyph = "ℹ",
         string accentColor = "#42D77D",
         string accentBackground = "#214329")
-    {
-        var dialog = new MessageWindow(message, title, iconGlyph, accentColor, accentBackground);
-        await ShowWindowWithoutActivation(dialog);
-    }
+        => await _messageOverlay.ShowAsync(message, title, iconGlyph, accentColor, accentBackground);
 
     Task ShowWindowWithoutActivation(Window dialog)
     {

@@ -1,4 +1,12 @@
-<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="CodexGui.Apps.CodexGui.MainWindow" Title="Transient Terry" Width="800" Height="700" MinWidth="600" MinHeight="500">
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:CodexGui.Apps.CodexGui"
+        x:Class="CodexGui.Apps.CodexGui.MainWindow"
+        Title="Transient Terry"
+        Width="800"
+        Height="700"
+        MinWidth="600"
+        MinHeight="500">
     <Grid RowDefinitions="3*,Auto,2*">
         <TabControl x:Name="tabControl" Grid.Row="0">
             <TabItem Header="Remote Setup">
@@ -448,5 +456,8 @@
                 </Grid>
             </Grid>
         </Border>
+
+        <local:MessageOverlay x:Name="messageOverlay"
+                              Grid.RowSpan="3"/>
     </Grid>
 </Window>

@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -6,14 +8,16 @@ using Avalonia.Media;
 
 namespace CodexGui.Apps.CodexGui;
 
-public partial class MessageWindow : Window
+public partial class MessageOverlay : UserControl
 {
-    private readonly TextBlock _headerText;
-    private readonly TextBlock _iconText;
-    private readonly Border _iconContainer;
-    private readonly TextBlock _messageText;
+    readonly TextBlock _headerText;
+    readonly TextBlock _iconText;
+    readonly Border _iconContainer;
+    readonly TextBlock _messageText;
 
-    public MessageWindow()
+    TaskCompletionSource<object?>? _completionSource;
+
+    public MessageOverlay()
     {
         InitializeComponent();
 
@@ -39,26 +43,34 @@ public partial class MessageWindow : Window
         _messageText = messageText;
     }
 
-    public MessageWindow(string message,
+    public Task ShowAsync(string message,
         string title = "Message",
         string iconGlyph = "ℹ",
         string accentColor = "#42D77D",
         string accentBackground = "#214329")
-        : this()
     {
-        Title = title;
+        if (_completionSource != null)
+            throw new InvalidOperationException("Overlay is already visible.");
+
         _headerText.Text = title;
         _iconText.Text = iconGlyph;
         _iconText.Foreground = Brush.Parse(accentColor);
         _iconContainer.Background = Brush.Parse(accentBackground);
         _messageText.Text = message;
+
+        IsVisible = true;
+        IsHitTestVisible = true;
+        Focus();
+
+        _completionSource = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        return _completionSource.Task;
     }
 
     void InitializeComponent()
         => AvaloniaXamlLoader.Load(this);
 
     void OnClose(object? sender, RoutedEventArgs e)
-        => Close();
+        => Complete();
 
     async void OnCopyMessage(object? sender, RoutedEventArgs e)
     {
@@ -71,5 +83,17 @@ public partial class MessageWindow : Window
             return;
 
         await topLevel.Clipboard.SetTextAsync(text);
+    }
+
+    void Complete()
+    {
+        if (_completionSource == null)
+            return;
+
+        IsVisible = false;
+        IsHitTestVisible = false;
+
+        _completionSource.TrySetResult(null);
+        _completionSource = null;
     }
 }
