@@ -643,6 +643,8 @@ public partial class MainWindow : Window
 
         try
         {
+            ClearExportTargetFolder();
+
             var tool = new ExportTool(
                 _exportPatBox.Text,
                 _exportSourceRepoUrlBox.Text ?? string.Empty,
@@ -742,6 +744,17 @@ public partial class MainWindow : Window
         {
             _checkDiffsButton.IsEnabled = true;
         }
+    }
+
+    void ClearExportTargetFolder()
+    {
+        var runtime = Helpers.PrepareRuntime();
+        var exportTargetPath = Path.Combine(runtime, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER);
+
+        if (Directory.Exists(exportTargetPath))
+            Helpers.DeleteDirectory(exportTargetPath);
+
+        Directory.CreateDirectory(exportTargetPath);
     }
 
     void SetRunExportEnabled()

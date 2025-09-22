@@ -281,7 +281,6 @@ namespace Common.Scripts
                 Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.SOURCE_FOLDER),
                 Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER),
                 Path.Combine(path, Texts.EXPORT_FOLDER),
-                Path.Combine(path, Texts.EXPORT_FOLDER, Texts.SOURCE_FOLDER),
                 Path.Combine(path, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER)
             };
 
