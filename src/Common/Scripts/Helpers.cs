@@ -359,11 +359,8 @@ namespace Common.Scripts
 
             var folders = new[]
             {
-                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER),
-                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.SOURCE_FOLDER),
-                Path.Combine(path, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER),
-                Path.Combine(path, Texts.EXPORT_FOLDER),
-                Path.Combine(path, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER)
+                Path.Combine(path, Texts.SETUP_FOLDER),
+                Path.Combine(path, Texts.EXPORT_FOLDER)
             };
 
             foreach (var folder in folders)
@@ -373,10 +370,10 @@ namespace Common.Scripts
             return path;
         }
 
-        public static string GetRuntimeRepositoryPath(string scope, string role, string repoUrl)
+        public static string GetRuntimeRepositoryPath(string scope, string repoUrl)
         {
             var runtime = PrepareRuntime();
-            var basePath = Path.Combine(runtime, scope, role);
+            var basePath = Path.Combine(runtime, scope);
             Directory.CreateDirectory(basePath);
             var repoName = RepoUtils.GetRepoName(repoUrl);
             return Path.Combine(basePath, repoName);

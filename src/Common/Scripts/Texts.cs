@@ -24,10 +24,8 @@ namespace Common.Scripts
         public const string RESETTING_HARD_STATUS = "Resetting hard to {0} in {1}";
         
         public const string RUNTIME_FOLDER = "runtime";
-        public const string REMOTE_SETUP_FOLDER = "RemoteSetup";
+        public const string SETUP_FOLDER = "Setup";
         public const string EXPORT_FOLDER = "Export";
-        public const string SOURCE_FOLDER = "Source";
-        public const string TARGET_FOLDER = "Target";
         public const string TEMP_REWIRE_BRANCH_TEMPLATE = "codex/temp/rewire-{0}";
         public const string REMOVE_CODEX_FILES_DETAILS = "Remove codex required files and restore .gitignore settings for main development branch";
         public const string UPDATE_SUBMODULES_DETAILS = "Update submodules and restore shared meta files";

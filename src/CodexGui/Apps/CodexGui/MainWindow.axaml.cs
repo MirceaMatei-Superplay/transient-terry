@@ -57,12 +57,16 @@ public partial class MainWindow : Window
     ComboBox _setupSourceBox = null!;
     TextBox _setupTargetBox = null!;
     TextBox _setupPatBox = null!;
+    Button _openSetupFolderButton = null!;
+    Button _deleteSetupCacheButton = null!;
     Button _runSetupButton = null!;
     TextBox _exportSourceRepoUrlBox = null!;
     TextBox _exportTargetRepoUrlBox = null!;
     ComboBox _exportSourceBox = null!;
     ComboBox _exportTargetBox = null!;
     TextBox _exportPatBox = null!;
+    Button _openExportFolderButton = null!;
+    Button _deleteExportCacheButton = null!;
     Button _refreshExportSourceButton = null!;
     Button _refreshExportTargetButton = null!;
     Button _checkDiffsButton = null!;
@@ -104,12 +108,16 @@ public partial class MainWindow : Window
         _setupSourceBox = this.FindControl<ComboBox>("setupSourceBox")!;
         _setupTargetBox = this.FindControl<TextBox>("setupTargetBox")!;
         _setupPatBox = this.FindControl<TextBox>("setupPatBox")!;
+        _openSetupFolderButton = this.FindControl<Button>("openSetupFolderButton")!;
+        _deleteSetupCacheButton = this.FindControl<Button>("deleteSetupCacheButton")!;
         _runSetupButton = this.FindControl<Button>("runSetupButton")!;
         _exportSourceRepoUrlBox = this.FindControl<TextBox>("exportSourceRepoUrlBox")!;
         _exportTargetRepoUrlBox = this.FindControl<TextBox>("exportTargetRepoUrlBox")!;
         _exportSourceBox = this.FindControl<ComboBox>("exportSourceBox")!;
         _exportTargetBox = this.FindControl<ComboBox>("exportTargetBox")!;
         _exportPatBox = this.FindControl<TextBox>("exportPatBox")!;
+        _openExportFolderButton = this.FindControl<Button>("openExportFolderButton")!;
+        _deleteExportCacheButton = this.FindControl<Button>("deleteExportCacheButton")!;
         _refreshExportSourceButton = this.FindControl<Button>("refreshExportSourceButton")!;
         _refreshExportTargetButton = this.FindControl<Button>("refreshExportTargetButton")!;
         _checkDiffsButton = this.FindControl<Button>("checkDiffsButton")!;
@@ -163,7 +171,11 @@ public partial class MainWindow : Window
         _csprojMakeCommitsBox.GetObservable(CheckBox.IsCheckedProperty).Subscribe(_ => OnValueChanged());
         _csprojPushWhenDoneBox.GetObservable(CheckBox.IsCheckedProperty).Subscribe(_ => OnValueChanged());
 
+        _openSetupFolderButton.Click += OnOpenSetupFolder;
+        _deleteSetupCacheButton.Click += async (_, _) => await DeleteSetupCache();
         _runSetupButton.Click += async (_, _) => await ExecuteOperation("Run Full Setup", RunSetup);
+        _openExportFolderButton.Click += OnOpenExportFolder;
+        _deleteExportCacheButton.Click += async (_, _) => await DeleteExportCache();
         _runExportButton.Click += async (_, _) => await ExecuteOperation("Run Export", RunExport);
         _checkDiffsButton.Click += async (_, _) => await ExecuteOperation("Check Diffs", CheckDiffs);
         _refreshExportSourceButton.Click += async (_, _) => await UpdateExportBranches(true, false);
@@ -318,6 +330,115 @@ public partial class MainWindow : Window
         {
             SaveSettings();
         }
+    }
+
+    async void OnOpenSetupFolder(object? sender, RoutedEventArgs e)
+        => await OpenFolderForScope(Texts.SETUP_FOLDER);
+
+    async void OnOpenExportFolder(object? sender, RoutedEventArgs e)
+        => await OpenFolderForScope(Texts.EXPORT_FOLDER);
+
+    async Task OpenFolderForScope(string scope)
+    {
+        var runtime = Helpers.PrepareRuntime();
+        var scopePath = Path.Combine(runtime, scope);
+        Directory.CreateDirectory(scopePath);
+
+        if (TryOpenFolder(scopePath))
+            return;
+
+        await ShowMessage(string.Format(CultureInfo.InvariantCulture,
+            "Failed to open folder at {0}.", scopePath));
+    }
+
+    bool TryOpenFolder(string path)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+            return true;
+        }
+        catch (Win32Exception)
+        {
+        }
+        catch (PlatformNotSupportedException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return TryOpenFolderWithShell(path);
+    }
+
+    bool TryOpenFolderWithShell(string path)
+    {
+        var command = GetFolderOpenCommand();
+        if (command == null)
+            return false;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = command.Value.fileName,
+                Arguments = string.Format(CultureInfo.InvariantCulture,
+                    command.Value.argumentFormat,
+                    path),
+                UseShellExecute = false
+            });
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    (string fileName, string argumentFormat)? GetFolderOpenCommand()
+    {
+        if (OperatingSystem.IsWindows())
+            return ("explorer", "\"{0}\"");
+        if (OperatingSystem.IsLinux())
+            return ("xdg-open", "\"{0}\"");
+        if (OperatingSystem.IsMacOS())
+            return ("open", "\"{0}\"");
+        return null;
+    }
+
+    async Task DeleteSetupCache()
+        => await DeleteCachedRepository(Texts.SETUP_FOLDER, _settings.SetupTargetRepoUrl);
+
+    async Task DeleteExportCache()
+        => await DeleteCachedRepository(Texts.EXPORT_FOLDER, _settings.ExportTargetRepoUrl);
+
+    async Task DeleteCachedRepository(string scope, string repoUrl)
+    {
+        if (string.IsNullOrWhiteSpace(repoUrl))
+        {
+            await ShowMessage("Please enter a repository URL before deleting the cached repository.");
+            return;
+        }
+
+        var runtime = Helpers.PrepareRuntime();
+        var repoName = RepoUtils.GetRepoName(repoUrl);
+        var repoPath = Path.Combine(runtime, scope, repoName);
+
+        if (Directory.Exists(repoPath) == false)
+        {
+            await ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                "No cached repository found at {0}.", repoPath));
+            return;
+        }
+
+        Helpers.DeleteDirectory(repoPath);
+
+        await ShowMessage(string.Format(CultureInfo.InvariantCulture,
+            "Cached repository deleted at {0}.", repoPath));
     }
 
     void LoadSettings()
@@ -509,8 +630,7 @@ public partial class MainWindow : Window
         SaveSettings();
 
         var repoPath = Helpers.GetRuntimeRepositoryPath(
-            Texts.REMOTE_SETUP_FOLDER,
-            Texts.TARGET_FOLDER,
+            Texts.SETUP_FOLDER,
             _settings.SetupTargetRepoUrl);
 
         await CloneRepository(_settings.SetupTargetRepoUrl, repoPath);
@@ -645,7 +765,7 @@ public partial class MainWindow : Window
 
         try
         {
-            ClearExportTargetFolder();
+            ClearExportFolder();
 
             var tool = new ExportTool(
                 _exportPatBox.Text,
@@ -748,15 +868,15 @@ public partial class MainWindow : Window
         }
     }
 
-    void ClearExportTargetFolder()
+    void ClearExportFolder()
     {
         var runtime = Helpers.PrepareRuntime();
-        var exportTargetPath = Path.Combine(runtime, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER);
+        var exportPath = Path.Combine(runtime, Texts.EXPORT_FOLDER);
 
-        if (Directory.Exists(exportTargetPath))
-            Helpers.DeleteDirectory(exportTargetPath);
+        if (Directory.Exists(exportPath))
+            Helpers.DeleteDirectory(exportPath);
 
-        Directory.CreateDirectory(exportTargetPath);
+        Directory.CreateDirectory(exportPath);
     }
 
     void SetRunExportEnabled()

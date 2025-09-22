@@ -25,7 +25,7 @@ namespace SubmodulesDeflattenerImport.Scripts
             var repoName = RepoUtils.GetRepoName(repoUrl);
             Logger.Write(string.Format(Texts.REPOSITORY_NAME_RESOLVED, repoName));
 
-            _mainRepoPath = Path.Combine(runtime, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER, repoName);
+            _mainRepoPath = Path.Combine(runtime, Texts.SETUP_FOLDER, repoName);
         }
 
         public async Task Run()

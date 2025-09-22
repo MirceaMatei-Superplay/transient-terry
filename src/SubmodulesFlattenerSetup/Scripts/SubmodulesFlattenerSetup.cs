@@ -24,7 +24,7 @@ public class SubmodulesFlattenerSetup
 
         var runtime = Helpers.PrepareRuntime();
         var repoName = RepoUtils.GetRepoName(targetRepoUrl);
-        _repoPath = Path.Combine(runtime, Texts.REMOTE_SETUP_FOLDER, Texts.TARGET_FOLDER, repoName);
+        _repoPath = Path.Combine(runtime, Texts.SETUP_FOLDER, repoName);
     }
 
     public async Task<bool> Run()

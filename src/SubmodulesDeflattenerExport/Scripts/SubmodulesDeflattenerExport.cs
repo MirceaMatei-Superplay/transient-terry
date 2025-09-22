@@ -36,7 +36,7 @@ namespace SubmodulesDeflattenerExport.Scripts
             var repoName = RepoUtils.GetRepoName(targetRepoUrl);
             Logger.Write(string.Format(Texts.REPOSITORY_NAME_RESOLVED, repoName));
 
-            _mainRepoPath = Path.Combine(runtime, Texts.EXPORT_FOLDER, Texts.TARGET_FOLDER, repoName);
+            _mainRepoPath = Path.Combine(runtime, Texts.EXPORT_FOLDER, repoName);
         }
 
         async Task<string?> PrepareMainRepo(bool checkDiffs)
