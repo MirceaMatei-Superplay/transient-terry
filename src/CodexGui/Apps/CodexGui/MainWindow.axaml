@@ -58,9 +58,17 @@
                                                     Margin="0,0,12,0">
                                             <TextBlock Text="Setup Source Branch"
                                                        Foreground="#DADADA"/>
-                                            <ComboBox x:Name="setupSourceBox"
-                                                      MinWidth="220"
-                                                      HorizontalAlignment="Stretch"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <ComboBox x:Name="setupSourceBox"
+                                                          Grid.Column="0"
+                                                          MinWidth="220"
+                                                          HorizontalAlignment="Stretch"/>
+                                                <Button x:Name="refreshSetupSourceButton"
+                                                        Grid.Column="1"
+                                                        Margin="12,0,0,0"
+                                                        Padding="16,6"
+                                                        Content="Refresh"/>
+                                            </Grid>
                                         </StackPanel>
                                         <StackPanel Grid.Row="1"
                                                     Grid.Column="1"

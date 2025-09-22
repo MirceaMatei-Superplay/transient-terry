@@ -60,6 +60,7 @@ public partial class MainWindow : Window
     Button _openSetupFolderButton = null!;
     Button _deleteSetupCacheButton = null!;
     Button _runSetupButton = null!;
+    Button _refreshSetupSourceButton = null!;
     TextBox _exportSourceRepoUrlBox = null!;
     TextBox _exportTargetRepoUrlBox = null!;
     ComboBox _exportSourceBox = null!;
@@ -111,6 +112,7 @@ public partial class MainWindow : Window
         _openSetupFolderButton = this.FindControl<Button>("openSetupFolderButton")!;
         _deleteSetupCacheButton = this.FindControl<Button>("deleteSetupCacheButton")!;
         _runSetupButton = this.FindControl<Button>("runSetupButton")!;
+        _refreshSetupSourceButton = this.FindControl<Button>("refreshSetupSourceButton")!;
         _exportSourceRepoUrlBox = this.FindControl<TextBox>("exportSourceRepoUrlBox")!;
         _exportTargetRepoUrlBox = this.FindControl<TextBox>("exportTargetRepoUrlBox")!;
         _exportSourceBox = this.FindControl<ComboBox>("exportSourceBox")!;
@@ -174,6 +176,7 @@ public partial class MainWindow : Window
         _openSetupFolderButton.Click += OnOpenSetupFolder;
         _deleteSetupCacheButton.Click += async (_, _) => await DeleteSetupCache();
         _runSetupButton.Click += async (_, _) => await ExecuteOperation("Run Full Setup", RunSetup);
+        _refreshSetupSourceButton.Click += async (_, _) => await UpdateSetupBranches();
         _openExportFolderButton.Click += OnOpenExportFolder;
         _deleteExportCacheButton.Click += async (_, _) => await DeleteExportCache();
         _runExportButton.Click += async (_, _) => await ExecuteOperation("Run Export", RunExport);
