@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using Common.Scripts;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ public class CsprojRegen
 
     public CsprojRegen(string unityExe, string repoPath)
     {
-        _unityExe = unityExe;
+        _unityExe = ResolveUnityExecutablePath(unityExe);
         _repoPath = Path.TrimEndingDirectorySeparator(repoPath);
     }
 
@@ -130,6 +131,24 @@ public class CsprojRegen
                 // ignored
             }
         }
+    }
+
+    static string ResolveUnityExecutablePath(string unityPath)
+    {
+        if (string.IsNullOrWhiteSpace(unityPath))
+            throw new ArgumentException("Unity path cannot be empty.", nameof(unityPath));
+
+        var trimmedPath = Path.TrimEndingDirectorySeparator(unityPath);
+
+        if (OperatingSystem.IsMacOS() &&
+            trimmedPath.EndsWith(".app", StringComparison.OrdinalIgnoreCase))
+        {
+            var macExecutablePath = Path.Combine(trimmedPath, "Contents", "MacOS", "Unity");
+            if (File.Exists(macExecutablePath))
+                return macExecutablePath;
+        }
+
+        return trimmedPath;
     }
 
 }
