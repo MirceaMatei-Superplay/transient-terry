@@ -48,6 +48,9 @@ namespace Common.Scripts
         public const string SHARED_GITMODULES_TEMP = "Shared.gitmodules";
         public const string SHARED_COPY_MISSING_ERROR = "Shared-copy directory does not exist. Please ensure the Shared folder was copied correctly.";
         public const string MERGE_BASE_BRANCH_HEAD = "-C {0} merge-base {1} HEAD";
+        public const string ORIGIN_REMOTE = "origin";
+        public const int MERGE_BASE_FETCH_ATTEMPTS = 4;
+        public const int MERGE_BASE_DEEPEN_INCREMENT = 32;
         public const string IMPORT_USAGE = "Usage: submodules-deflattener-import <repo-url> <target-branch> <source-branch>";
         public const string REWIRING_FOR_DEV_ENVIRONMENT = "Rewiring for dev environment";
         public const string PR_DESCRIPTION = "This PR rewires the project to be compatible with a local Unity dev environment.";
@@ -65,7 +68,7 @@ namespace Common.Scripts
         public const string REPOSITORY_NAME_RESOLVED = "Repository name resolved to {0}";
         public const string NEXT_PR_NUMBER = "Next PR number is {0}";
         public const string CREATING_AND_CHECKING_OUT = "Creating and checking out {0}";
-        public const string CLONE_COMMAND = "clone {0} {1}";
+        public const string CLONE_COMMAND = "clone --depth 1 {0} {1}";
         public const string CLONING_REPOSITORY = "Cloning repository from {0} to {1}";
         public const string LIST_REMOTE_BRANCHES = "ls-remote --heads {0}";
         public const string REFS_HEADS_PREFIX = "refs/heads/";

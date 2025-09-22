@@ -629,7 +629,7 @@ public partial class MainWindow : Window
     async Task FetchBranch(string path, string url, string branch)
     {
         Logger.Write(string.Format("Fetching {0} from {1}", branch, url));
-        await Helpers.RunGit($"-C {path} fetch {url} {branch}:{branch}", _settings.Pat);
+        await Helpers.RunGit($"-C {path} fetch --depth 1 {url} {branch}:{branch}", _settings.Pat);
     }
 
     async Task CheckDiffs()

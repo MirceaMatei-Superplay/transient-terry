@@ -142,8 +142,90 @@ namespace Common.Scripts
             return result;
         }
 
-        public static Task<string> GetMergeBase(string repoPath, string branch, string? pat = null) =>
-            RunGitCapture(string.Format(Texts.MERGE_BASE_BRANCH_HEAD, repoPath, branch), pat);
+        public static async Task<string> GetMergeBase(string repoPath, string branch, string? pat = null)
+        {
+            var command = string.Format(Texts.MERGE_BASE_BRANCH_HEAD, repoPath, branch);
+
+            for (var attempt = 0; attempt < Texts.MERGE_BASE_FETCH_ATTEMPTS; attempt++)
+            {
+                string mergeBase;
+                try
+                {
+                    mergeBase = await RunGitCapture(command, pat);
+                }
+                catch (GitException)
+                {
+                    if (attempt == Texts.MERGE_BASE_FETCH_ATTEMPTS - 1)
+                        throw;
+
+                    await FetchMergeBaseHistory(repoPath, branch, pat, attempt);
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(mergeBase) == false)
+                    return mergeBase;
+
+                if (attempt == Texts.MERGE_BASE_FETCH_ATTEMPTS - 1)
+                    break;
+
+                await FetchMergeBaseHistory(repoPath, branch, pat, attempt);
+            }
+
+            return await RunGitCapture(command, pat);
+        }
+
+        static async Task FetchMergeBaseHistory(string repoPath, string branch, string? pat, int attempt)
+        {
+            var deepen = Texts.MERGE_BASE_DEEPEN_INCREMENT << attempt;
+            var remote = await GetRemoteOrDefault(repoPath, branch, pat);
+            await RunGit($"-C {repoPath} fetch --deepen {deepen} {remote} {branch}", pat);
+
+            var headBranch = await GetCurrentBranch(repoPath, pat);
+            if (headBranch is string current && string.IsNullOrWhiteSpace(current) == false)
+            {
+                var headRemote = await TryGetBranchRemote(repoPath, current, pat);
+                if (string.IsNullOrWhiteSpace(headRemote) == false)
+                    await RunGit($"-C {repoPath} fetch --deepen {deepen} {headRemote} {current}", pat);
+            }
+        }
+
+        static async Task<string> GetRemoteOrDefault(string repoPath, string branch, string? pat)
+        {
+            var remote = await TryGetBranchRemote(repoPath, branch, pat);
+            if (string.IsNullOrWhiteSpace(remote))
+                return Texts.ORIGIN_REMOTE;
+
+            return remote;
+        }
+
+        static async Task<string?> GetCurrentBranch(string repoPath, string? pat)
+        {
+            try
+            {
+                var branch = await RunGitCapture($"-C {repoPath} rev-parse --abbrev-ref HEAD", pat);
+                return branch == "HEAD" ? null : branch;
+            }
+            catch (GitException)
+            {
+                return null;
+            }
+        }
+
+        static async Task<string?> TryGetBranchRemote(string repoPath, string branch, string? pat)
+        {
+            if (string.IsNullOrWhiteSpace(branch))
+                return null;
+
+            try
+            {
+                var remote = await RunGitCapture($"-C {repoPath} config --get branch.{branch}.remote", pat);
+                return string.IsNullOrWhiteSpace(remote) ? null : remote;
+            }
+            catch (GitException)
+            {
+                return null;
+            }
+        }
 
         public static async Task<List<string>> GetRemoteBranches(string repo, string? pat = null)
         {
@@ -339,7 +421,7 @@ namespace Common.Scripts
                     await RunGit($"-C {path} remote set-url origin {url}", pat);
                     await RunGit($"-C {path} reset --hard", pat);
                     await RunGit($"-C {path} clean -xfd", pat);
-                    await RunGit($"-C {path} fetch origin", pat);
+                    await RunGit($"-C {path} fetch --depth 1 origin", pat);
                     Logger.Write(string.Format(Texts.REUSING_CACHED_REPOSITORY, path));
                     shouldClone = false;
                 }
