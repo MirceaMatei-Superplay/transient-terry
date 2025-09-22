@@ -12,274 +12,260 @@
             <TabItem Header="Remote Setup">
                 <ScrollViewer>
                     <StackPanel Margin="24" Spacing="24">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Remote repository automation"
-                                   FontSize="20"
-                                   FontWeight="SemiBold"/>
-                        <TextBlock Text="Fill in the repository and Unity details to run the guided setup."
-                                   Foreground="#BBBBBB"/>
-                    </StackPanel>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Remote repository automation"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock Text="Fill in the repository and Unity details to run the guided setup."
+                                       Foreground="#BBBBBB"/>
+                        </StackPanel>
 
-                    <Border Padding="24"
-                            Background="#1F1F1F"
-                            BorderBrush="#323232"
-                            BorderThickness="1"
-                            CornerRadius="8">
-                        <Grid ColumnDefinitions="Auto,16,*">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                        <Border Padding="24"
+                                Background="#1F1F1F"
+                                BorderBrush="#323232"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <StackPanel Spacing="24">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Repositories"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"/>
+                                    <Grid ColumnDefinitions="*,*"
+                                          RowDefinitions="Auto,Auto">
+                                        <StackPanel Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    Spacing="6"
+                                                    Margin="0,0,12,0">
+                                            <TextBlock Text="Source Repo URL"
+                                                       Foreground="#DADADA"/>
+                                            <TextBox x:Name="setupSourceRepoUrlBox"
+                                                     MinWidth="260"
+                                                     HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Spacing="6"
+                                                    Margin="12,0,0,0">
+                                            <TextBlock Text="Target Repo URL"
+                                                       Foreground="#DADADA"/>
+                                            <TextBox x:Name="setupTargetRepoUrlBox"
+                                                     MinWidth="260"
+                                                     HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1"
+                                                    Grid.Column="0"
+                                                    Spacing="6"
+                                                    Margin="0,0,12,0">
+                                            <TextBlock Text="Setup Source Branch"
+                                                       Foreground="#DADADA"/>
+                                            <ComboBox x:Name="setupSourceBox"
+                                                      MinWidth="220"
+                                                      HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    Spacing="6"
+                                                    Margin="12,0,0,0">
+                                            <TextBlock Text="Setup Target Branch"
+                                                       Foreground="#DADADA"/>
+                                            <TextBox x:Name="setupTargetBox"
+                                                     MinWidth="220"
+                                                     HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Source Repo URL"/>
-                            <TextBox x:Name="setupSourceRepoUrlBox"
-                                     Grid.Row="0"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="360"
-                                     HorizontalAlignment="Stretch"/>
+                                <Separator Background="#2B2B2B"/>
 
-                            <TextBlock Grid.Row="1"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Target Repo URL"/>
-                            <TextBox x:Name="setupTargetRepoUrlBox"
-                                     Grid.Row="1"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="360"
-                                     HorizontalAlignment="Stretch"/>
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Unity"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"/>
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Unity Path"
+                                                   Foreground="#DADADA"/>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBox x:Name="unityPathBox"
+                                                     Grid.Column="0"
+                                                     MinWidth="320"
+                                                     HorizontalAlignment="Stretch"/>
+                                            <Button Grid.Column="1"
+                                                    Margin="12,0,0,0"
+                                                    Padding="16,6"
+                                                    Content="Browse..."
+                                                    Click="OnBrowseUnity"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="2"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Unity Path"/>
-                            <Grid Grid.Row="2" Grid.Column="2" Margin="0,0,0,16" ColumnDefinitions="*,Auto">
-                                <TextBox x:Name="unityPathBox"
-                                         Grid.Column="0"
-                                         HorizontalAlignment="Stretch"
-                                         MinWidth="360"/>
-                                <Button Grid.Column="1"
-                                        Margin="12,0,0,0"
-                                        Padding="16,6"
-                                        Content="Browse..."
-                                        Click="OnBrowseUnity"/>
-                            </Grid>
+                                <Separator Background="#2B2B2B"/>
 
-                            <TextBlock Grid.Row="3"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Setup Source Branch"/>
-                            <ComboBox x:Name="setupSourceBox"
-                                      Grid.Row="3"
-                                      Grid.Column="2"
-                                      Margin="0,0,0,16"
-                                      MinWidth="240"
-                                      HorizontalAlignment="Stretch"/>
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Credentials"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"/>
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="GH_PAT"
+                                                   Foreground="#DADADA"/>
+                                        <TextBox x:Name="setupPatBox"
+                                                 MinWidth="240"
+                                                 HorizontalAlignment="Stretch"
+                                                 PasswordChar="*"/>
+                                    </StackPanel>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="4"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Setup Target Branch"/>
-                            <TextBox x:Name="setupTargetBox"
-                                     Grid.Row="4"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="240"
-                                     HorizontalAlignment="Stretch"/>
-
-                            <TextBlock Grid.Row="5"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="GH_PAT"/>
-                            <TextBox x:Name="setupPatBox"
-                                     Grid.Row="5"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,24"
-                                     MinWidth="240"
-                                     HorizontalAlignment="Stretch"
-                                     PasswordChar="*"/>
-
-                            <StackPanel Grid.Row="6"
-                                        Grid.Column="2"
-                                        Orientation="Horizontal"
-                                        HorizontalAlignment="Right"
-                                        Spacing="12">
-                                <Button x:Name="openSetupFolderButton"
-                                        Padding="24,8"
-                                        MinWidth="180"
-                                        Content="Open Setup Folder"/>
-                                <Button x:Name="deleteSetupCacheButton"
-                                        Padding="24,8"
-                                        MinWidth="220"
-                                        Content="Delete Cached Repository"/>
-                                <Button x:Name="runSetupButton"
-                                        Padding="24,8"
-                                        MinWidth="180"
-                                        Content="Run Full Setup"/>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Spacing="12">
+                                    <Button x:Name="openSetupFolderButton"
+                                            Padding="24,8"
+                                            MinWidth="180"
+                                            Content="Open Setup Folder"/>
+                                    <Button x:Name="deleteSetupCacheButton"
+                                            Padding="24,8"
+                                            MinWidth="220"
+                                            Content="Delete Cached Repository"/>
+                                    <Button x:Name="runSetupButton"
+                                            Padding="24,8"
+                                            MinWidth="180"
+                                            Content="Run Full Setup"/>
+                                </StackPanel>
                             </StackPanel>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </TabItem>
-        <TabItem Header="Export">
-            <ScrollViewer>
-                <StackPanel Margin="24" Spacing="24">
-                    <StackPanel Spacing="4">
-                        <TextBlock Text="Submodule export"
-                                   FontSize="20"
-                                   FontWeight="SemiBold"/>
-                        <TextBlock Text="Configure the repositories and branches to export your submodules."
-                                   Foreground="#BBBBBB"/>
+                        </Border>
                     </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Export">
+                <ScrollViewer>
+                    <StackPanel Margin="24" Spacing="24">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Submodule export"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"/>
+                            <TextBlock Text="Configure the repositories and branches to export your submodules."
+                                       Foreground="#BBBBBB"/>
+                        </StackPanel>
 
-                    <Border Padding="24"
-                            Background="#1F1F1F"
-                            BorderBrush="#323232"
-                            BorderThickness="1"
-                            CornerRadius="8">
-                        <Grid ColumnDefinitions="Auto,16,*">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
+                        <Border Padding="24"
+                                Background="#1F1F1F"
+                                BorderBrush="#323232"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <StackPanel Spacing="24">
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Repositories"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"/>
+                                    <Grid ColumnDefinitions="*,*"
+                                          RowDefinitions="Auto,Auto">
+                                        <StackPanel Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    Spacing="6"
+                                                    Margin="0,0,12,0">
+                                            <TextBlock Text="Source Repo URL"
+                                                       Foreground="#DADADA"/>
+                                            <TextBox x:Name="exportSourceRepoUrlBox"
+                                                     MinWidth="260"
+                                                     HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Spacing="6"
+                                                    Margin="12,0,0,0">
+                                            <TextBlock Text="Target Repo URL"
+                                                       Foreground="#DADADA"/>
+                                            <TextBox x:Name="exportTargetRepoUrlBox"
+                                                     MinWidth="260"
+                                                     HorizontalAlignment="Stretch"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1"
+                                                    Grid.Column="0"
+                                                    Spacing="6"
+                                                    Margin="0,0,12,0">
+                                            <TextBlock Text="Export Source Branch"
+                                                       Foreground="#DADADA"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <ComboBox x:Name="exportSourceBox"
+                                                          Grid.Column="0"
+                                                          MinWidth="220"
+                                                          HorizontalAlignment="Stretch"/>
+                                                <Button x:Name="refreshExportSourceButton"
+                                                        Grid.Column="1"
+                                                        Margin="12,0,0,0"
+                                                        Padding="16,6"
+                                                        Content="Refresh"/>
+                                            </Grid>
+                                        </StackPanel>
+                                        <StackPanel Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    Spacing="6"
+                                                    Margin="12,0,0,0">
+                                            <TextBlock Text="Export Target Branch"
+                                                       Foreground="#DADADA"/>
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <ComboBox x:Name="exportTargetBox"
+                                                          Grid.Column="0"
+                                                          MinWidth="220"
+                                                          HorizontalAlignment="Stretch"/>
+                                                <Button x:Name="refreshExportTargetButton"
+                                                        Grid.Column="1"
+                                                        Margin="12,0,0,0"
+                                                        Padding="16,6"
+                                                        Content="Refresh"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="0"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Source Repo URL"/>
-                            <TextBox x:Name="exportSourceRepoUrlBox"
-                                     Grid.Row="0"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="360"
-                                     HorizontalAlignment="Stretch"/>
+                                <Separator Background="#2B2B2B"/>
 
-                            <TextBlock Grid.Row="1"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Target Repo URL"/>
-                            <TextBox x:Name="exportTargetRepoUrlBox"
-                                     Grid.Row="1"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="360"
-                                     HorizontalAlignment="Stretch"/>
+                                <StackPanel Spacing="12">
+                                    <TextBlock Text="Credentials"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"/>
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="GH_PAT"
+                                                   Foreground="#DADADA"/>
+                                        <TextBox x:Name="exportPatBox"
+                                                 MinWidth="240"
+                                                 HorizontalAlignment="Stretch"
+                                                 PasswordChar="*"/>
+                                    </StackPanel>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="2"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Export Source Branch"/>
-                            <Grid Grid.Row="2"
-                                  Grid.Column="2"
-                                  Margin="0,0,0,16"
-                                  ColumnDefinitions="*,Auto">
-                                <ComboBox x:Name="exportSourceBox"
-                                          Grid.Column="0"
-                                          HorizontalAlignment="Stretch"
-                                          MinWidth="240"/>
-                                <Button x:Name="refreshExportSourceButton"
-                                        Grid.Column="1"
-                                        Margin="12,0,0,0"
-                                        Padding="16,6"
-                                        Content="Refresh"/>
-                            </Grid>
+                                <StackPanel Spacing="16">
+                                    <Button x:Name="checkDiffsButton"
+                                            Padding="24,8"
+                                            MinWidth="180"
+                                            HorizontalAlignment="Right"
+                                            Content="Check Diffs"/>
 
-                            <TextBlock Grid.Row="3"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="Export Target Branch"/>
-                            <Grid Grid.Row="3"
-                                  Grid.Column="2"
-                                  Margin="0,0,0,16"
-                                  ColumnDefinitions="*,Auto">
-                                <ComboBox x:Name="exportTargetBox"
-                                          Grid.Column="0"
-                                          HorizontalAlignment="Stretch"
-                                          MinWidth="240"/>
-                                <Button x:Name="refreshExportTargetButton"
-                                        Grid.Column="1"
-                                        Margin="12,0,0,0"
-                                        Padding="16,6"
-                                        Content="Refresh"/>
-                            </Grid>
+                                    <StackPanel x:Name="submodulePanel"
+                                                Margin="0,0,0,8"/>
+                                </StackPanel>
 
-                            <TextBlock Grid.Row="4"
-                                       Grid.Column="0"
-                                       Margin="0,0,0,8"
-                                       VerticalAlignment="Center"
-                                       Text="GH_PAT"/>
-                            <TextBox x:Name="exportPatBox"
-                                     Grid.Row="4"
-                                     Grid.Column="2"
-                                     Margin="0,0,0,16"
-                                     MinWidth="240"
-                                     HorizontalAlignment="Stretch"
-                                     PasswordChar="*"/>
-
-                            <Button x:Name="checkDiffsButton"
-                                    Grid.Row="5"
-                                    Grid.Column="2"
-                                    Margin="0,0,0,16"
-                                    Padding="24,8"
-                                    MinWidth="180"
-                                    HorizontalAlignment="Right"
-                                    Content="Check Diffs"/>
-
-                            <StackPanel x:Name="submodulePanel"
-                                        Grid.Row="6"
-                                        Grid.Column="2"
-                                        Margin="0,0,0,16"/>
-
-                            <StackPanel Grid.Row="7"
-                                        Grid.Column="2"
-                                        Orientation="Horizontal"
-                                        HorizontalAlignment="Right"
-                                        Spacing="12">
-                                <Button x:Name="openExportFolderButton"
-                                        Padding="24,8"
-                                        MinWidth="180"
-                                        Content="Open Export Folder"/>
-                                <Button x:Name="deleteExportCacheButton"
-                                        Padding="24,8"
-                                        MinWidth="220"
-                                        Content="Delete Cached Repository"/>
-                                <Button x:Name="runExportButton"
-                                        Padding="24,8"
-                                        MinWidth="180"
-                                        Content="Run Export"
-                                        IsEnabled="False"/>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            Spacing="12">
+                                    <Button x:Name="openExportFolderButton"
+                                            Padding="24,8"
+                                            MinWidth="180"
+                                            Content="Open Export Folder"/>
+                                    <Button x:Name="deleteExportCacheButton"
+                                            Padding="24,8"
+                                            MinWidth="220"
+                                            Content="Delete Cached Repository"/>
+                                    <Button x:Name="runExportButton"
+                                            Padding="24,8"
+                                            MinWidth="180"
+                                            Content="Run Export"
+                                            IsEnabled="False"/>
+                                </StackPanel>
                             </StackPanel>
-                        </Grid>
-                    </Border>
-                </StackPanel>
-            </ScrollViewer>
-        </TabItem>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
         <TabItem Header="Local Setup">
             <ScrollViewer>
                 <StackPanel Margin="10">
