@@ -59,6 +59,8 @@ public class SubmodulesFlattenerSetup
     async Task FetchBranch(string path, string url, string branch)
     {
         Logger.Write(string.Format("Fetching {0} from {1}", branch, url));
-        await Helpers.RunGit($"-C {path} fetch --depth 1 --force {url} {branch}:{branch}", _pat);
+        await Helpers.EnsureRemote(path, Texts.SOURCE_REMOTE, url, _pat);
+        await Helpers.RunGit($"-C {path} fetch --depth 1 --force {Texts.SOURCE_REMOTE} {branch}:{branch}", _pat);
+        await Helpers.ConfigureBranchRemote(path, branch, Texts.SOURCE_REMOTE, _pat);
     }
 }

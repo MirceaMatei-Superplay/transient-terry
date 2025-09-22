@@ -403,6 +403,35 @@ namespace Common.Scripts
             return temp;
         }
 
+        public static async Task EnsureRemote(string repoPath, string remoteName, string url, string? pat = null)
+        {
+            var remotes = await RunGitCapture($"-C {repoPath} remote", pat);
+            var remoteExists = false;
+            foreach (var remote in remotes.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+                if (string.Equals(remote, remoteName, StringComparison.OrdinalIgnoreCase))
+                {
+                    remoteExists = true;
+                    break;
+                }
+
+            if (remoteExists)
+            {
+                var existingUrl = await RunGitCapture($"-C {repoPath} remote get-url {remoteName}", pat);
+                if (AreRepositoryUrlsEqual(existingUrl, url) == false)
+                    await RunGit($"-C {repoPath} remote set-url {remoteName} {url}", pat);
+            }
+            else
+            {
+                await RunGit($"-C {repoPath} remote add {remoteName} {url}", pat);
+            }
+        }
+
+        public static async Task ConfigureBranchRemote(string repoPath, string branch, string remoteName, string? pat = null)
+        {
+            await RunGit($"-C {repoPath} config branch.{branch}.remote {remoteName}", pat);
+            await RunGit($"-C {repoPath} config branch.{branch}.merge refs/heads/{branch}", pat);
+        }
+
         public static async Task PrepareRepositoryCache(string url, string path, string? pat = null)
         {
             var parent = Path.GetDirectoryName(path);

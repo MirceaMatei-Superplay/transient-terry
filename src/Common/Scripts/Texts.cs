@@ -49,6 +49,7 @@ namespace Common.Scripts
         public const string SHARED_COPY_MISSING_ERROR = "Shared-copy directory does not exist. Please ensure the Shared folder was copied correctly.";
         public const string MERGE_BASE_BRANCH_HEAD = "-C {0} merge-base {1} HEAD";
         public const string ORIGIN_REMOTE = "origin";
+        public const string SOURCE_REMOTE = "source";
         public const int MERGE_BASE_FETCH_ATTEMPTS = 4;
         public const int MERGE_BASE_DEEPEN_INCREMENT = 32;
         public const string IMPORT_USAGE = "Usage: submodules-deflattener-import <repo-url> <target-branch> <source-branch>";
