@@ -117,7 +117,7 @@ namespace SubmodulesDeflattenerExport.Scripts
         private async Task FetchBranch(string path, string url, string branch)
         {
             Logger.Write(string.Format("Fetching {0} from {1}", branch, url));
-            await Helpers.RunGit($"-C {path} fetch --depth 1 {url} {branch}:{branch}", _pat);
+            await Helpers.RunGit($"-C {path} fetch --depth 1 --force {url} {branch}:{branch}", _pat);
         }
 
         private static void BackupFiles(string path)

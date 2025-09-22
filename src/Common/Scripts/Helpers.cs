@@ -421,7 +421,7 @@ namespace Common.Scripts
                     await RunGit($"-C {path} remote set-url origin {url}", pat);
                     await RunGit($"-C {path} reset --hard", pat);
                     await RunGit($"-C {path} clean -xfd", pat);
-                    await RunGit($"-C {path} fetch --depth 1 origin", pat);
+                    await RunGit($"-C {path} fetch --depth 1 --force origin", pat);
                     Logger.Write(string.Format(Texts.REUSING_CACHED_REPOSITORY, path));
                     shouldClone = false;
                 }
