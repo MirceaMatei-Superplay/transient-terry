@@ -768,8 +768,6 @@ public partial class MainWindow : Window
 
         try
         {
-            ClearExportFolder();
-
             var tool = new ExportTool(
                 _exportPatBox.Text,
                 _exportSourceRepoUrlBox.Text ?? string.Empty,

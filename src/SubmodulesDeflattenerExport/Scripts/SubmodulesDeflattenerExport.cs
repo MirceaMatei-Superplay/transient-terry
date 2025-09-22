@@ -462,8 +462,6 @@ namespace SubmodulesDeflattenerExport.Scripts
             var mergeBase = await Helpers.GetMergeBase(_mainRepoPath, _targetBranch, _pat);
 
             var result = await CollectChangedSubmodules(_mainRepoPath, mergeBase, string.Empty, false);
-
-            Helpers.DeleteDirectory(_mainRepoPath);
             
             return result;
         }
