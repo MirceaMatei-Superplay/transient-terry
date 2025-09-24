@@ -917,16 +917,24 @@ public partial class MainWindow : Window
 
         foreach (var submodule in _diffSubmodules)
         {
-            var makeNew = _submoduleMakeBranchChecks[submodule.Name].IsChecked == true;
-            if (makeNew)
+            if (_submoduleMakeBranchChecks.TryGetValue(submodule.Name, out var makeBranchCheck) == false
+                || _submoduleNewBranchBoxes.TryGetValue(submodule.Name, out var newBranchBox) == false
+                || _submoduleBranchBoxes.TryGetValue(submodule.Name, out var branchBox) == false)
             {
-                if (string.IsNullOrWhiteSpace(_submoduleNewBranchBoxes[submodule.Name]!.Text))
+                _runExportButton.IsEnabled = false;
+                return;
+            }
+
+            var isMakeNewBranch = makeBranchCheck.IsChecked == true;
+            if (isMakeNewBranch)
+            {
+                if (string.IsNullOrWhiteSpace(newBranchBox.Text))
                 {
                     _runExportButton.IsEnabled = false;
                     return;
                 }
             }
-            else if (_submoduleBranchBoxes[submodule.Name]!.SelectedItem == null)
+            else if (branchBox.SelectedItem == null)
             {
                 _runExportButton.IsEnabled = false;
                 return;
