@@ -21,4 +21,10 @@
     <ProjectReference Include="../SubmodulesFlattenerSetup/SubmodulesFlattenerSetup.csproj" />
     <ProjectReference Include="../CsprojSetupToolApp/CsprojSetupToolApp.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Apps\CodexGui\MainWindow\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>
