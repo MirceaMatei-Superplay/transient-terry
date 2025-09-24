@@ -46,33 +46,35 @@
                                TextWrapping="Wrap"/>
                 </ScrollViewer>
 
-                <StackPanel Orientation="Horizontal"
-                            HorizontalAlignment="Center"
+                <StackPanel HorizontalAlignment="Center"
                             Spacing="12">
                     <Button x:Name="viewCallstackButton"
                             Content="View Callstack"
-                            Width="140"
+                            Width="252"
                             Click="OnViewCallstack"
                             Background="#2B2B2B"
                             Foreground="#FFFFFF"
                             Padding="8"
                             FontWeight="SemiBold"
                             IsVisible="False"/>
-                    <Button Content="Copy"
-                            Width="120"
-                            Click="OnCopyMessage"
-                            Background="#2B2B2B"
-                            Foreground="#FFFFFF"
-                            Padding="8"
-                            FontWeight="SemiBold"/>
-
-                    <Button Content="OK"
-                            Width="120"
-                            Click="OnClose"
-                            Background="#42D77D"
-                            Foreground="#0D1F16"
-                            Padding="8"
-                            FontWeight="SemiBold"/>
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center"
+                                Spacing="12">
+                        <Button Content="Copy"
+                                Width="120"
+                                Click="OnCopyMessage"
+                                Background="#2B2B2B"
+                                Foreground="#FFFFFF"
+                                Padding="8"
+                                FontWeight="SemiBold"/>
+                        <Button Content="OK"
+                                Width="120"
+                                Click="OnClose"
+                                Background="#42D77D"
+                                Foreground="#0D1F16"
+                                Padding="8"
+                                FontWeight="SemiBold"/>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Border>
