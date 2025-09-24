@@ -49,6 +49,15 @@
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Center"
                             Spacing="12">
+                    <Button x:Name="viewCallstackButton"
+                            Content="View Callstack"
+                            Width="140"
+                            Click="OnViewCallstack"
+                            Background="#2B2B2B"
+                            Foreground="#FFFFFF"
+                            Padding="8"
+                            FontWeight="SemiBold"
+                            IsVisible="False"/>
                     <Button Content="Copy"
                             Width="120"
                             Click="OnCopyMessage"

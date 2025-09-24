@@ -14,8 +14,11 @@ public partial class MessageOverlay : UserControl
     readonly TextBlock _iconText;
     readonly Border _iconContainer;
     readonly TextBlock _messageText;
+    readonly Button _viewCallstackButton;
 
     TaskCompletionSource<object?>? _completionSource;
+    string? _callstack;
+    string _currentTitle = "Message";
 
     public MessageOverlay()
     {
@@ -37,26 +40,35 @@ public partial class MessageOverlay : UserControl
         if (messageText == null)
             throw new InvalidOperationException("Message text control was not found.");
 
+        var viewCallstackButton = this.FindControl<Button>("viewCallstackButton");
+        if (viewCallstackButton == null)
+            throw new InvalidOperationException("Callstack button was not found.");
+
         _headerText = headerText;
         _iconText = iconText;
         _iconContainer = iconContainer;
         _messageText = messageText;
+        _viewCallstackButton = viewCallstackButton;
     }
 
     public Task ShowAsync(string message,
         string title = "Message",
         string iconGlyph = "ℹ",
         string accentColor = "#42D77D",
-        string accentBackground = "#214329")
+        string accentBackground = "#214329",
+        string? callstack = null)
     {
         if (_completionSource != null)
             throw new InvalidOperationException("Overlay is already visible.");
 
+        _currentTitle = title;
         _headerText.Text = title;
         _iconText.Text = iconGlyph;
         _iconText.Foreground = Brush.Parse(accentColor);
         _iconContainer.Background = Brush.Parse(accentBackground);
         _messageText.Text = message;
+        _callstack = callstack;
+        _viewCallstackButton.IsVisible = string.IsNullOrWhiteSpace(callstack) == false;
 
         IsVisible = true;
         IsHitTestVisible = true;
@@ -66,11 +78,21 @@ public partial class MessageOverlay : UserControl
         return _completionSource.Task;
     }
 
+    public event EventHandler<CallstackRequestedEventArgs>? CallstackRequested;
+
     void InitializeComponent()
         => AvaloniaXamlLoader.Load(this);
 
     void OnClose(object? sender, RoutedEventArgs e)
         => Complete();
+
+    void OnViewCallstack(object? sender, RoutedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(_callstack))
+            return;
+
+        CallstackRequested?.Invoke(this, new CallstackRequestedEventArgs(_currentTitle, _callstack));
+    }
 
     async void OnCopyMessage(object? sender, RoutedEventArgs e)
     {
@@ -92,8 +114,23 @@ public partial class MessageOverlay : UserControl
 
         IsVisible = false;
         IsHitTestVisible = false;
+        _viewCallstackButton.IsVisible = false;
+        _callstack = null;
 
         _completionSource.TrySetResult(null);
         _completionSource = null;
+    }
+
+    public sealed class CallstackRequestedEventArgs : EventArgs
+    {
+        public CallstackRequestedEventArgs(string title, string callstack)
+        {
+            Title = title;
+            Callstack = callstack;
+        }
+
+        public string Title { get; }
+
+        public string Callstack { get; }
     }
 }

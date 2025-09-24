@@ -85,6 +85,7 @@ public partial class MainWindow : Window
     ScrollViewer _logScrollViewer = null!;
     TextBlock _logSummaryText = null!;
     MessageOverlay _messageOverlay = null!;
+    CallstackOverlay _callstackOverlay = null!;
     IDisposable? _summaryBoundsSubscription;
 
     public MainWindow()
@@ -93,6 +94,7 @@ public partial class MainWindow : Window
 
         InitializeComponent();
         AttachControls();
+        _messageOverlay.CallstackRequested += OnMessageCallstackRequested;
         RegisterEvents();
         InitializeLogging();
         LoadSettings();
@@ -136,6 +138,7 @@ public partial class MainWindow : Window
         _summaryItemsControl = this.FindControl<ItemsControl>("summaryItemsControl")!;
         _logScrollViewer = this.FindControl<ScrollViewer>("logScrollViewer")!;
         _logSummaryText = this.FindControl<TextBlock>("logSummaryText")!;
+        _callstackOverlay = this.FindControl<CallstackOverlay>("callstackOverlay")!;
         _messageOverlay = this.FindControl<MessageOverlay>("messageOverlay")!;
     }
 
@@ -203,6 +206,23 @@ public partial class MainWindow : Window
         await CopyToClipboard(entry.CopyText);
     }
 
+    async void OnViewLogCallstack(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        if (button.DataContext is not LogDisplayEntry entry)
+            return;
+
+        if (string.IsNullOrWhiteSpace(entry.Callstack))
+            return;
+
+        var title = string.Format(CultureInfo.InvariantCulture,
+            "{0} Callstack",
+            entry.Title);
+        await ShowCallstack(title, entry.Callstack);
+    }
+
     void OnToggleLogMessage(object? sender, RoutedEventArgs e)
     {
         if (sender is not Button button)
@@ -261,7 +281,12 @@ public partial class MainWindow : Window
                 title,
                 exception.Message);
             Logger.LogOperationResult(title, message, stopwatch.Elapsed, LogLevel.Error);
-            await ShowMessage(message);
+            await ShowMessage(message,
+                "Error",
+                "!",
+                "#FF6B6B",
+                "#2C1B1B",
+                exception.ToString());
         }
     }
 
@@ -915,8 +940,30 @@ public partial class MainWindow : Window
         string title = "Message",
         string iconGlyph = "ℹ",
         string accentColor = "#42D77D",
-        string accentBackground = "#214329")
-        => await _messageOverlay.ShowAsync(message, title, iconGlyph, accentColor, accentBackground);
+        string accentBackground = "#214329",
+        string? callstack = null)
+    {
+        await _messageOverlay.ShowAsync(message,
+            title,
+            iconGlyph,
+            accentColor,
+            accentBackground,
+            callstack);
+    }
+
+    Task ShowCallstack(string title, string callstack)
+        => _callstackOverlay.ShowAsync(title, callstack);
+
+    async void OnMessageCallstackRequested(object? sender, MessageOverlay.CallstackRequestedEventArgs e)
+    {
+        if (string.IsNullOrWhiteSpace(e.Callstack))
+            return;
+
+        var title = string.Format(CultureInfo.InvariantCulture,
+            "{0} Callstack",
+            e.Title);
+        await ShowCallstack(title, e.Callstack);
+    }
 
     Task ShowWindowWithoutActivation(Window dialog)
     {
@@ -1024,6 +1071,7 @@ public partial class MainWindow : Window
     {
         Logger.LogGenerated -= HandleLogGenerated;
         _summaryBoundsSubscription?.Dispose();
+        _messageOverlay.CallstackRequested -= OnMessageCallstackRequested;
     }
 
     static void EnsureSettingsDirectory()
@@ -1103,6 +1151,9 @@ public partial class MainWindow : Window
             Level = logEvent.Level;
             Duration = logEvent.Duration;
             Timestamp = logEvent.Timestamp;
+            Callstack = string.IsNullOrWhiteSpace(logEvent.Callstack)
+                ? string.Empty
+                : logEvent.Callstack.Trim();
 
             var normalizedMessage = NormalizeLineEndings(Message);
             var lines = normalizedMessage.Length == 0
@@ -1135,6 +1186,10 @@ public partial class MainWindow : Window
         public TimeSpan? Duration { get; }
 
         public DateTimeOffset Timestamp { get; }
+
+        public string Callstack { get; }
+
+        public bool HasCallstack => string.IsNullOrWhiteSpace(Callstack) == false;
 
         public string DurationDisplay
             => Duration.HasValue

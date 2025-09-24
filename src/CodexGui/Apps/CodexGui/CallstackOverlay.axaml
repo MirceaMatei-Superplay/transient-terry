@@ -1,0 +1,51 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Class="CodexGui.Apps.CodexGui.CallstackOverlay"
+            IsVisible="False"
+            IsHitTestVisible="False"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch">
+    <Grid Background="#B3000000">
+        <Border Width="480"
+                MaxHeight="520"
+                Padding="24"
+                Background="#1E1E1E"
+                CornerRadius="12"
+                BorderThickness="1"
+                BorderBrush="#2B2B2B"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <StackPanel Spacing="16">
+                <TextBlock x:Name="headerText"
+                           Text="Callstack"
+                           FontSize="20"
+                           FontWeight="SemiBold"
+                           Foreground="#FFFFFF"/>
+                <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto">
+                    <TextBlock x:Name="callstackText"
+                               Foreground="#D9D9D9"
+                               TextWrapping="Wrap"
+                               FontFamily="Consolas"/>
+                </ScrollViewer>
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Spacing="12">
+                    <Button Content="Copy"
+                            Width="120"
+                            Click="OnCopyCallstack"
+                            Background="#2B2B2B"
+                            Foreground="#FFFFFF"
+                            Padding="8"
+                            FontWeight="SemiBold"/>
+                    <Button Content="Close"
+                            Width="120"
+                            Click="OnClose"
+                            Background="#42D77D"
+                            Foreground="#0D1F16"
+                            Padding="8"
+                            FontWeight="SemiBold"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Common.Scripts
 {
@@ -7,18 +8,18 @@ namespace Common.Scripts
         public static event Action<LogEvent>? LogGenerated;
 
         public static void Write(string message)
-            => Publish(new LogEvent("Log", message, LogLevel.Info, null));
+            => Publish(new LogEvent("Log", message, LogLevel.Info, null, CaptureCallstack()));
 
         public static void LogInfo(string title, string message)
-            => Publish(new LogEvent(title, message, LogLevel.Info, null));
+            => Publish(new LogEvent(title, message, LogLevel.Info, null, CaptureCallstack()));
 
         public static void LogWarning(string title, string message)
-            => Publish(new LogEvent(title, message, LogLevel.Warning, null));
+            => Publish(new LogEvent(title, message, LogLevel.Warning, null, CaptureCallstack()));
 
         public static void LogOperationResult(string title, string message, TimeSpan duration, LogLevel level)
         {
             var formatted = string.Format("{0} • Finished in {1:F0} ms", message.Trim(), duration.TotalMilliseconds);
-            Publish(new LogEvent(title, formatted, level, duration));
+            Publish(new LogEvent(title, formatted, level, duration, CaptureCallstack()));
         }
 
         static void Publish(LogEvent logEvent)
@@ -27,6 +28,12 @@ namespace Common.Scripts
             Console.WriteLine(logEvent.Message);
 #endif
             LogGenerated?.Invoke(logEvent);
+        }
+
+        static string CaptureCallstack()
+        {
+            var stackTrace = new StackTrace(2, true);
+            return stackTrace.ToString();
         }
     }
 }

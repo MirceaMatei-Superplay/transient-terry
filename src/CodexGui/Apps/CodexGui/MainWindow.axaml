@@ -352,21 +352,37 @@
                                                            Margin="8,0,0,0"
                                                            Text="{Binding DurationDisplay}"
                                                            Foreground="#BBBBBB"/>
-                                                <Button Grid.Column="3"
-                                                        Margin="8,0,0,0"
-                                                        Padding="4"
-                                                        Width="28"
-                                                        Height="28"
-                                                        Background="Transparent"
-                                                        BorderBrush="#3A3A3A"
-                                                        Click="OnCopyLogEntry"
-                                                        ToolTip.Tip="Copy entry to clipboard">
-                                                    <Path Width="16"
-                                                          Height="16"
-                                                          Stretch="Uniform"
-                                                          Fill="#E6E6E6"
-                                                          Data="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1z M19 5H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-                                                </Button>
+                                                <StackPanel Grid.Column="3"
+                                                            Margin="8,0,0,0"
+                                                            Spacing="6">
+                                                    <Button Padding="4"
+                                                            Width="28"
+                                                            Height="28"
+                                                            Background="Transparent"
+                                                            BorderBrush="#3A3A3A"
+                                                            Click="OnCopyLogEntry"
+                                                            ToolTip.Tip="Copy entry to clipboard">
+                                                        <Path Width="16"
+                                                              Height="16"
+                                                              Stretch="Uniform"
+                                                              Fill="#E6E6E6"
+                                                              Data="M16 1H4C2.9 1 2 1.9 2 3v12h2V3h12V1z M19 5H8C6.9 5 6 5.9 6 7v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                                    </Button>
+                                                    <Button Padding="4"
+                                                            Width="28"
+                                                            Height="28"
+                                                            Background="Transparent"
+                                                            BorderBrush="#3A3A3A"
+                                                            Click="OnViewLogCallstack"
+                                                            ToolTip.Tip="View callstack"
+                                                            IsVisible="{Binding HasCallstack}">
+                                                        <Path Width="16"
+                                                              Height="16"
+                                                              Stretch="Uniform"
+                                                              Fill="#E6E6E6"
+                                                              Data="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-3.04 0-5.5-2.46-5.5-5.5S8.96 5.5 12 5.5s5.5 2.46 5.5 5.5-2.46 5.5-5.5 5.5zm0-9c-1.93 0-3.5 1.57-3.5 3.5S10.07 15.5 12 15.5 15.5 13.93 15.5 12 13.93 7.5 12 7.5z"/>
+                                                    </Button>
+                                                </StackPanel>
                                             </Grid>
                                             <TextBlock Text="{Binding DisplayMessage}"
                                                        TextWrapping="Wrap"
@@ -469,6 +485,8 @@
             </Grid>
         </Border>
 
+        <local:CallstackOverlay x:Name="callstackOverlay"
+                                 Grid.RowSpan="3"/>
         <local:MessageOverlay x:Name="messageOverlay"
                               Grid.RowSpan="3"/>
     </Grid>
