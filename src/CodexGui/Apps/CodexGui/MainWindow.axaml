@@ -485,9 +485,9 @@
             </Grid>
         </Border>
 
-        <local:CallstackOverlay x:Name="callstackOverlay"
-                                 Grid.RowSpan="3"/>
         <local:MessageOverlay x:Name="messageOverlay"
                               Grid.RowSpan="3"/>
+        <local:CallstackOverlay x:Name="callstackOverlay"
+                                 Grid.RowSpan="3"/>
     </Grid>
 </Window>
