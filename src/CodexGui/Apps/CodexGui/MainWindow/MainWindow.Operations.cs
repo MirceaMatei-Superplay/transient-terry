@@ -21,6 +21,7 @@ public partial class MainWindow
     {
         Logger.LogInfo(title, string.Format(CultureInfo.InvariantCulture, "{0} started", title));
         var stopwatch = Stopwatch.StartNew();
+        _activeOperationStopwatch = stopwatch;
 
         try
         {
@@ -45,6 +46,10 @@ public partial class MainWindow
                 "#FF6B6B",
                 "#2C1B1B",
                 exception.ToString());
+        }
+        finally
+        {
+            _activeOperationStopwatch = null;
         }
     }
 

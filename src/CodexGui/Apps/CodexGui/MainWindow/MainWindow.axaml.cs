@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Common.Scripts;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace CodexGui.Apps.CodexGui;
 
@@ -68,6 +69,7 @@ public partial class MainWindow : Window
     MessageOverlay _messageOverlay = null!;
     CallstackOverlay _callstackOverlay = null!;
     IDisposable? _summaryBoundsSubscription;
+    Stopwatch? _activeOperationStopwatch;
 
     public MainWindow()
     {

@@ -14,12 +14,26 @@ public partial class MainWindow
         string accentBackground = "#214329",
         string? callstack = null)
     {
-        await _messageOverlay.ShowAsync(message,
-            title,
-            iconGlyph,
-            accentColor,
-            accentBackground,
-            callstack);
+        var stopwatch = _activeOperationStopwatch;
+        var shouldResume = stopwatch?.IsRunning == true;
+
+        if (shouldResume)
+            stopwatch!.Stop();
+
+        try
+        {
+            await _messageOverlay.ShowAsync(message,
+                title,
+                iconGlyph,
+                accentColor,
+                accentBackground,
+                callstack);
+        }
+        finally
+        {
+            if (shouldResume)
+                stopwatch!.Start();
+        }
     }
 
     Task ShowCallstack(string title, string callstack)
