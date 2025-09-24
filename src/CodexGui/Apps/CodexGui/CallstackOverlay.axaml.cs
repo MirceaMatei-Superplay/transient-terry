@@ -182,11 +182,36 @@ public partial class CallstackOverlay : UserControl
         if (File.Exists(entry.FilePath) == false)
             return false;
 
-        if (entry.LineNumber > 0 && TryOpenWithCode(entry.FilePath, entry.LineNumber))
-            return true;
+        if (entry.LineNumber > 0)
+        {
+            if (TryOpenWithRider(entry.FilePath, entry.LineNumber))
+                return true;
+
+            if (TryOpenWithCode(entry.FilePath, entry.LineNumber))
+                return true;
+        }
 
         return TryOpenWithShell(entry.FilePath);
     }
+
+    static bool TryOpenWithRider(string file, int line)
+    {
+        var args = string.Format(
+            CultureInfo.InvariantCulture,
+            "-na \"Rider\" --args --line {0} \"{1}\"",
+            line, file);
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "/usr/bin/open",
+            Arguments = args,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        return TryStartProcess(startInfo);
+    }
+
 
     static bool TryOpenWithCode(string path, int lineNumber)
     {
