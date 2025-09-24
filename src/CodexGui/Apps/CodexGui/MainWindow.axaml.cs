@@ -148,6 +148,36 @@ public partial class MainWindow : Window
     async void OnBrowseProject(object? sender, RoutedEventArgs e)
         => await BrowseForFolder(_csprojProjectPathBox);
 
+    async void OnShowDebugInfoMessage(object? sender, RoutedEventArgs e)
+        => await ShowMessage("This is a sample information message to test the overlay presentation.",
+            "Info Message",
+            "ℹ");
+
+    async void OnShowDebugWarningMessage(object? sender, RoutedEventArgs e)
+        => await ShowMessage("This is a sample warning to confirm that highlighting appears correctly.",
+            "Warning Message",
+            "⚠",
+            "#F2B84B",
+            "#3D2B0A");
+
+    async void OnShowDebugErrorMessage(object? sender, RoutedEventArgs e)
+    {
+        var callstack = string.Join(Environment.NewLine,
+            new[]
+            {
+                "System.InvalidOperationException: Simulated failure while processing input.",
+                "   at TransientTerry.Tools.DemoProcessor.Run() in C:\\Projects\\TransientTerry\\DemoProcessor.cs:line 42",
+                "   at TransientTerry.Tools.Program.Main()"
+            });
+
+        await ShowMessage("This is a sample error message to test the overlay, including a callstack for review.",
+            "Error Message",
+            "✖",
+            "#F47070",
+            "#3A1010",
+            callstack);
+    }
+
     void InitializeLogging()
     {
         _logItemsControl.ItemsSource = _logEntries;
