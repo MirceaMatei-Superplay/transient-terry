@@ -142,7 +142,10 @@ namespace Common.Scripts
             return result;
         }
 
-        public static async Task<string> GetMergeBase(string repoPath, string branch, string? pat = null)
+        public static async Task<(string shaBase, bool foundBase)> GetMergeBase(
+            string repoPath,
+            string branch,
+            string? pat = null)
         {
             var command = string.Format(Texts.MERGE_BASE_BRANCH_HEAD, repoPath, branch);
 
@@ -153,40 +156,76 @@ namespace Common.Scripts
                 {
                     mergeBase = await RunGitCapture(command, pat);
                 }
+                catch (GitException ex) when (IsMergeBaseUnavailable(ex))
+                {
+                    return (string.Empty, false);
+                }
                 catch (GitException)
                 {
                     if (attempt == Texts.MERGE_BASE_FETCH_ATTEMPTS - 1)
                         throw;
 
-                    await FetchMergeBaseHistory(repoPath, branch, pat, attempt);
+                    if (await TryFetchMergeBaseHistory(repoPath, branch, pat, attempt) == false)
+                        return (string.Empty, false);
+
                     continue;
                 }
 
                 if (string.IsNullOrWhiteSpace(mergeBase) == false)
-                    return mergeBase;
+                    return (mergeBase, true);
 
                 if (attempt == Texts.MERGE_BASE_FETCH_ATTEMPTS - 1)
                     break;
 
-                await FetchMergeBaseHistory(repoPath, branch, pat, attempt);
+                if (await TryFetchMergeBaseHistory(repoPath, branch, pat, attempt) == false)
+                    return (string.Empty, false);
             }
 
-            return await RunGitCapture(command, pat);
+            try
+            {
+                var mergeBase = await RunGitCapture(command, pat);
+                return (mergeBase, string.IsNullOrWhiteSpace(mergeBase) == false);
+            }
+            catch (GitException ex) when (IsMergeBaseUnavailable(ex))
+            {
+                return (string.Empty, false);
+            }
         }
 
-        static async Task FetchMergeBaseHistory(string repoPath, string branch, string? pat, int attempt)
+        static async Task<bool> TryFetchMergeBaseHistory(string repoPath, string branch, string? pat, int attempt)
         {
-            var deepen = Texts.MERGE_BASE_DEEPEN_INCREMENT << attempt;
-            var remote = await GetRemoteOrDefault(repoPath, branch, pat);
-            await RunGit($"-C {repoPath} fetch --deepen {deepen} {remote} {branch}", pat);
-
-            var headBranch = await GetCurrentBranch(repoPath, pat);
-            if (headBranch is string current && string.IsNullOrWhiteSpace(current) == false)
+            try
             {
-                var headRemote = await TryGetBranchRemote(repoPath, current, pat);
-                if (string.IsNullOrWhiteSpace(headRemote) == false)
-                    await RunGit($"-C {repoPath} fetch --deepen {deepen} {headRemote} {current}", pat);
+                var deepen = Texts.MERGE_BASE_DEEPEN_INCREMENT << attempt;
+                var remote = await GetRemoteOrDefault(repoPath, branch, pat);
+                await RunGit($"-C {repoPath} fetch --deepen {deepen} {remote} {branch}", pat);
+
+                var headBranch = await GetCurrentBranch(repoPath, pat);
+                if (headBranch is string current && string.IsNullOrWhiteSpace(current) == false)
+                {
+                    var headRemote = await TryGetBranchRemote(repoPath, current, pat);
+                    if (string.IsNullOrWhiteSpace(headRemote) == false)
+                        await RunGit($"-C {repoPath} fetch --deepen {deepen} {headRemote} {current}", pat);
+                }
             }
+            catch (GitException ex) when (IsMergeBaseUnavailable(ex))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        static bool IsMergeBaseUnavailable(GitException exception)
+        {
+            var message = exception.Message;
+            if (string.IsNullOrWhiteSpace(message))
+                return false;
+
+            return message.IndexOf("couldn't find remote ref", StringComparison.OrdinalIgnoreCase) >= 0
+                   || message.IndexOf("unknown revision or path not in the working tree", StringComparison.OrdinalIgnoreCase) >= 0
+                   || message.IndexOf("not a valid object name", StringComparison.OrdinalIgnoreCase) >= 0
+                   || message.IndexOf("needed a single revision", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         static async Task<string> GetRemoteOrDefault(string repoPath, string branch, string? pat)

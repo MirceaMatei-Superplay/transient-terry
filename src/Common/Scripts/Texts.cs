@@ -51,6 +51,8 @@ namespace Common.Scripts
         public const string SOURCE_REMOTE = "source";
         public const int MERGE_BASE_FETCH_ATTEMPTS = 4;
         public const int MERGE_BASE_DEEPEN_INCREMENT = 32;
+        public const string MERGE_BASE_NOT_FOUND_TEMPLATE =
+            "Merge base for branch {0} in {1} could not be determined. Skipping submodule processing.";
         public const string IMPORT_USAGE = "Usage: submodules-deflattener-import <repo-url> <target-branch> <source-branch>";
         public const string REWIRING_FOR_DEV_ENVIRONMENT = "Rewiring for dev environment";
         public const string PR_DESCRIPTION = "This PR rewires the project to be compatible with a local Unity dev environment.";

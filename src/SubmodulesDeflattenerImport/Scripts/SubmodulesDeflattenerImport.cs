@@ -48,9 +48,18 @@ namespace SubmodulesDeflattenerImport.Scripts
             RestoreGitFiles(_mainRepoPath);
             await Commit(_mainRepoPath, 1, Texts.REMOVE_CODEX_FILES_DETAILS);
 
-            var mergeBase = await Helpers.GetMergeBase(_mainRepoPath, _sourceBranch, _pat);
-
-            await ProcessSubmodules(_mainRepoPath, mergeBase, string.Empty, false);
+            var (mergeBase, hasMergeBase) = await Helpers.GetMergeBase(_mainRepoPath, _sourceBranch, _pat);
+            if (hasMergeBase)
+            {
+                await ProcessSubmodules(_mainRepoPath, mergeBase, string.Empty, false);
+            }
+            else
+            {
+                Logger.Write(string.Format(
+                    Texts.MERGE_BASE_NOT_FOUND_TEMPLATE,
+                    _sourceBranch,
+                    _mainRepoPath));
+            }
 
             Helpers.SanitizeGitModules(_mainRepoPath, _pat);
 
@@ -246,8 +255,15 @@ namespace SubmodulesDeflattenerImport.Scripts
             await Helpers.RunGit($"-C {path} add .", _pat);
             await Helpers.RunGit($"-C {path} reset", _pat);
 
-            var nestedBase = await Helpers.GetMergeBase(path, _sourceBranch, _pat);
-            await ProcessSubmodules(path, nestedBase, sharedRelativePath, true);
+            var (nestedBase, hasNestedBase) = await Helpers.GetMergeBase(path, _sourceBranch, _pat);
+            if (hasNestedBase)
+            {
+                await ProcessSubmodules(path, nestedBase, sharedRelativePath, true);
+            }
+            else
+            {
+                Logger.Write(string.Format(Texts.MERGE_BASE_NOT_FOUND_TEMPLATE, _sourceBranch, path));
+            }
 
             var diffExitCode = await Helpers.RunGit($"-C {path} diff --exit-code", _pat)
                 .SuppressGitException();
