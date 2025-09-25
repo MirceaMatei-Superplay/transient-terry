@@ -18,8 +18,20 @@ public class SubmodulesFlattener
         var localBranch = await Helpers.RunGitCapture($"-C {repoPath} branch --list {targetBranch}", _pat);
         if (string.IsNullOrEmpty(localBranch) == false)
         {
-            Logger.Write(string.Format(Texts.BRANCH_EXISTS, targetBranch));
-            return false;
+            var remoteBranch = await Helpers.RunGitCapture(
+                $"-C {repoPath} ls-remote --heads {Texts.ORIGIN_REMOTE} {targetBranch}",
+                _pat);
+
+            if (string.IsNullOrEmpty(remoteBranch))
+            {
+                Logger.Write(string.Format(Texts.DELETING_LOCAL_BRANCH_WITHOUT_REMOTE, targetBranch));
+                await Helpers.RunGit($"-C {repoPath} branch -D {targetBranch}", _pat);
+            }
+            else
+            {
+                Logger.Write(string.Format(Texts.BRANCH_EXISTS, targetBranch));
+                return false;
+            }
         }
 
         await Helpers.RunGit($"-C {repoPath} reset --hard", _pat);

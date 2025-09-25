@@ -3,6 +3,8 @@ namespace Common.Scripts
     public static class Texts
     {
         public const string BRANCH_EXISTS = "Branch {0} already exists. Please delete it before running the tool.";
+        public const string DELETING_LOCAL_BRANCH_WITHOUT_REMOTE =
+            "Branch {0} exists locally without a remote. Deleting local branch.";
         public const string CODEX_MAIN_BRANCH = "codex/main";
         public const string MAIN_BRANCH = "main";
         public const string DOT_GITMODULES = ".gitmodules";
