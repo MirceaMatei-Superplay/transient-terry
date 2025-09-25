@@ -19,6 +19,7 @@ namespace Common.Scripts
         public const string SWITCH = "-C {0} switch {1}";
         public const string RUNNING_COMMAND = "Running command: {0} {1}";
         public const string CHECKING_OUT_STATUS = "Checking out {0} in {1}";
+        public const string FETCHING_BRANCH_STATUS = "Branch {0} not found locally. Fetching from {1}.";
         public const string SWITCHING_OUT_STATUS = "Switching from {0} to {1}";
         public const string RESETTING_HARD = "-C {0} reset --hard {1}";
         public const string RESETTING_HARD_STATUS = "Resetting hard to {0} in {1}";

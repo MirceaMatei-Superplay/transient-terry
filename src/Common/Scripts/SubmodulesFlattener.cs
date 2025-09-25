@@ -103,6 +103,8 @@ public class SubmodulesFlattener
 
     private async Task CheckoutBranch(string path, string branch)
     {
+        await Helpers.EnsureBranchAvailability(path, branch, _pat);
+
         Logger.Write(string.Format(Texts.CHECKING_OUT_STATUS, branch, path));
         await Helpers.RunGit(string.Format(Texts.CHECKING_OUT, path, branch), _pat);
     }

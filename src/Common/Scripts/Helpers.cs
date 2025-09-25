@@ -227,6 +227,18 @@ namespace Common.Scripts
             }
         }
 
+        public static async Task EnsureBranchAvailability(string repoPath, string branch, string? pat = null)
+        {
+            var branchList = await RunGitCapture($"-C {repoPath} branch --list {branch}", pat);
+            if (string.IsNullOrWhiteSpace(branchList) == false)
+                return;
+
+            var remote = await TryGetBranchRemote(repoPath, branch, pat) ?? Texts.ORIGIN_REMOTE;
+
+            Logger.Write(string.Format(Texts.FETCHING_BRANCH_STATUS, branch, remote));
+            await RunGit($"-C {repoPath} fetch --depth 1 {remote} {branch}:{branch}", pat);
+        }
+
         public static async Task<List<string>> GetRemoteBranches(string repo, string? pat = null)
         {
             var output = await RunGitCapture(string.Format(Texts.LIST_REMOTE_BRANCHES, repo), pat);
