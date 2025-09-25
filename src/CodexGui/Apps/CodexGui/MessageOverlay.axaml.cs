@@ -13,7 +13,7 @@ public partial class MessageOverlay : UserControl
     readonly TextBlock _headerText;
     readonly TextBlock _iconText;
     readonly Border _iconContainer;
-    readonly TextBlock _messageText;
+    readonly SelectableTextBlock _messageText;
     readonly Button _viewCallstackButton;
 
     TaskCompletionSource<object?>? _completionSource;
@@ -36,7 +36,7 @@ public partial class MessageOverlay : UserControl
         if (iconContainer == null)
             throw new InvalidOperationException("Icon container control was not found.");
 
-        var messageText = this.FindControl<TextBlock>("messageText");
+        var messageText = this.FindControl<SelectableTextBlock>("messageText");
         if (messageText == null)
             throw new InvalidOperationException("Message text control was not found.");
 

@@ -120,12 +120,14 @@ public partial class CallstackOverlay : UserControl
             textBlock.Cursor = new Cursor(StandardCursorType.Hand);
             ToolTip.SetTip(textBlock, entry.FilePath);
 
-            textBlock.PointerPressed += (_, e) =>
+            textBlock.PointerReleased += (_, e) =>
             {
-                if (e.GetCurrentPoint(textBlock).Properties.IsLeftButtonPressed == false)
+                if (e.InitialPressMouseButton != MouseButton.Left)
                     return;
 
-                e.Handled = true;
+                if (textBlock.SelectionStart != textBlock.SelectionEnd)
+                    return;
+
                 TryOpenCallstackEntry(entry);
             };
 
@@ -137,9 +139,9 @@ public partial class CallstackOverlay : UserControl
         _callstackPanel.Children.Add(defaultLine);
     }
 
-    static TextBlock CreateCallstackTextBlock(string text, IBrush foreground)
+    static SelectableTextBlock CreateCallstackTextBlock(string text, IBrush foreground)
     {
-        var block = new TextBlock
+        var block = new SelectableTextBlock
         {
             Text = text,
             Foreground = foreground,
