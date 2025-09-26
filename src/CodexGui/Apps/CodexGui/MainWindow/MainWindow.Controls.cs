@@ -36,6 +36,9 @@ public partial class MainWindow
         _checkDiffsButton = this.FindControl<Button>("checkDiffsButton")!;
         _submodulePanel = this.FindControl<StackPanel>("submodulePanel")!;
         _runExportButton = this.FindControl<Button>("runExportButton")!;
+        _showCurrentSubmoduleCardsButton = this.FindControl<Button>("showCurrentSubmoduleCardsButton")!;
+        _showSampleSubmoduleCardsButton = this.FindControl<Button>("showSampleSubmoduleCardsButton")!;
+        _debugSubmodulePanel = this.FindControl<StackPanel>("debugSubmodulePanel")!;
         _csprojProjectPathBox = this.FindControl<TextBox>("csprojProjectPathBox")!;
         _csprojRunUnityBox = this.FindControl<CheckBox>("csprojRunUnityBox")!;
         _csprojMakeCommitsBox = this.FindControl<CheckBox>("csprojMakeCommitsBox")!;
@@ -83,6 +86,8 @@ public partial class MainWindow
         _checkDiffsButton.Click += async (_, _) => await ExecuteOperation("Check Diffs", CheckDiffs);
         _refreshExportSourceButton.Click += async (_, _) => await UpdateExportBranches(true, false);
         _refreshExportTargetButton.Click += async (_, _) => await UpdateExportBranches(false, true);
+        _showCurrentSubmoduleCardsButton.Click += OnShowCurrentSubmoduleCards;
+        _showSampleSubmoduleCardsButton.Click += OnShowSampleSubmoduleCards;
         _runCsprojSetupButton.Click += async (_, _) => await ExecuteOperation("Run Csproj Setup", RunCsprojSetup);
         _runFlattenButton.Click += async (_, _) => await ExecuteOperation("Run Flatten", RunFlatten);
         _runCsprojRelinkButton.Click += async (_, _) => await ExecuteOperation("Run Csproj Relink", RunCsprojRelink);
@@ -131,6 +136,20 @@ public partial class MainWindow
             "#F47070",
             "#3A1010",
             callstack);
+    }
+
+    async void OnShowCurrentSubmoduleCards(object? sender, RoutedEventArgs e)
+    {
+        PopulateDebugSubmodulePanel(_diffSubmodules, false);
+
+        if (_diffSubmodules.Count == 0)
+            await ShowMessage(
+                "There are no submodule diffs available. Run Check Diffs to load current data.");
+    }
+
+    void OnShowSampleSubmoduleCards(object? sender, RoutedEventArgs e)
+    {
+        PopulateDebugSubmodulePanel(BuildSampleSubmodules(), true);
     }
 
     async void OnCopyLogEntry(object? sender, RoutedEventArgs e)

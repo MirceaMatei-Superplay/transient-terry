@@ -249,7 +249,8 @@
                                             Content="Check Diffs"/>
 
                                     <StackPanel x:Name="submodulePanel"
-                                                Margin="0,0,0,8"/>
+                                                Margin="0,0,0,8"
+                                                Spacing="12"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal"
@@ -324,6 +325,38 @@
                                     HorizontalAlignment="Left"
                                     Content="Show error message"
                                     Click="OnShowDebugErrorMessage"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Padding="24"
+                            Background="#1F1F1F"
+                            BorderBrush="#323232"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                        <StackPanel Spacing="16">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Submodule branch picker preview"
+                                           FontSize="20"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Inspect the submodule branch cards loaded in the export tab or review sample data."
+                                           Foreground="#BBBBBB"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="12">
+                                <Button x:Name="showCurrentSubmoduleCardsButton"
+                                        Padding="24,8"
+                                        MinWidth="220"
+                                        Content="Show current diffs"/>
+                                <Button x:Name="showSampleSubmoduleCardsButton"
+                                        Padding="24,8"
+                                        MinWidth="220"
+                                        Content="Show sample data"/>
+                            </StackPanel>
+
+                            <StackPanel x:Name="debugSubmodulePanel"
+                                        Spacing="12"/>
                         </StackPanel>
                     </Border>
                 </StackPanel>

@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Common.Scripts;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -11,6 +12,18 @@ public partial class MainWindow : Window
     const string SETTINGS_FILE_NAME = "guiSettings.json";
     const int BOX_WIDTH = 400;
     const double DEFAULT_SUMMARY_BAR_WIDTH = 360;
+    static readonly string[] SAMPLE_BRANCHES =
+    {
+        "main",
+        "develop",
+        "release/2024.1"
+    };
+    static readonly SubmoduleInfo[] SAMPLE_SUBMODULES =
+    {
+        new("AudioTools", "Assets/AudioTools", "https://github.com/superplaygames/AudioTools"),
+        new("Localization", "Assets/Localization", "https://github.com/superplaygames/Localization"),
+        new("GameUI", "Assets/GameUI", "https://github.com/superplaygames/GameUI")
+    };
 
     readonly Dictionary<string, ComboBox> _submoduleBranchBoxes = new();
     readonly Dictionary<string, CheckBox> _submoduleMakeBranchChecks = new();
@@ -55,6 +68,9 @@ public partial class MainWindow : Window
     Button _checkDiffsButton = null!;
     StackPanel _submodulePanel = null!;
     Button _runExportButton = null!;
+    Button _showCurrentSubmoduleCardsButton = null!;
+    Button _showSampleSubmoduleCardsButton = null!;
+    StackPanel _debugSubmodulePanel = null!;
     TextBox _csprojProjectPathBox = null!;
     CheckBox _csprojRunUnityBox = null!;
     CheckBox _csprojMakeCommitsBox = null!;

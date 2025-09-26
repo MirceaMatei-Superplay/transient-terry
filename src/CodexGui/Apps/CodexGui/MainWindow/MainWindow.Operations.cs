@@ -1,11 +1,13 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Media;
 using Common.Scripts;
 using ExportTool = SubmodulesDeflattenerExport.Scripts.SubmodulesDeflattenerExport;
 using SetupRunner = SubmodulesFlattenerSetup.Scripts.SubmodulesFlattenerSetup;
 using CsprojApp = CsprojSetupToolApp.Apps.CsprojSetupToolApp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -262,7 +264,6 @@ public partial class MainWindow
 
             foreach (var submodule in _diffSubmodules)
             {
-                var combo = new ComboBox { Width = BOX_WIDTH };
                 var branches = await Helpers.GetRemoteBranches(submodule.Url, _exportPatBox.Text);
                 _settings.ExportSubmoduleSettings.TryGetValue(submodule.Name, out var savedSetting);
                 if (savedSetting != null
@@ -270,47 +271,44 @@ public partial class MainWindow
                     && branches.Contains(savedSetting.BaseBranch) == false)
                     branches.Add(savedSetting.BaseBranch);
 
-                _submoduleBranchBoxes[submodule.Name] = combo;
+                var card = CreateSubmoduleCard(submodule, branches, false);
+                _submodulePanel.Children.Add(card.container);
 
-                combo.ItemsSource = branches;
-                combo.SelectionChanged += (_, _) =>
+                _submoduleBranchBoxes[submodule.Name] = card.branchCombo;
+                _submoduleMakeBranchChecks[submodule.Name] = card.createBranchCheck;
+                _submoduleNewBranchBoxes[submodule.Name] = card.newBranchBox;
+
+                card.branchCombo.SelectionChanged += (_, _) =>
                 {
                     SetRunExportEnabled();
                     HandleSubmoduleValueChanged();
                 };
 
-                var makeBranch = new CheckBox { Content = "Make new branch" };
-                var branchBox = new TextBox { Width = 150, IsVisible = false };
-
-                _submoduleMakeBranchChecks[submodule.Name] = makeBranch;
-                _submoduleNewBranchBoxes[submodule.Name] = branchBox;
-
-                makeBranch.IsCheckedChanged += (_, _) =>
+                card.createBranchCheck.IsCheckedChanged += (_, _) =>
                 {
-                    var isChecked = makeBranch.IsChecked == true;
-                    combo.IsVisible = isChecked == false;
-                    branchBox.IsVisible = isChecked;
-                    if (isChecked && string.IsNullOrWhiteSpace(branchBox.Text))
-                        branchBox.Text = branches.Contains(_exportTargetBox.SelectedItem?.ToString() ?? string.Empty)
+                    var isChecked = card.createBranchCheck.IsChecked == true;
+                    if (isChecked && string.IsNullOrWhiteSpace(card.newBranchBox.Text))
+                    {
+                        var targetBranch = _exportTargetBox.SelectedItem?.ToString();
+                        var hasTarget = targetBranch != null
+                            && branches.Contains(targetBranch);
+                        card.newBranchBox.Text = hasTarget
                             ? string.Empty
-                            : _exportTargetBox.SelectedItem?.ToString();
+                            : targetBranch ?? string.Empty;
+                    }
 
+                    UpdateSubmoduleCardVisibility(card.branchCombo, card.createBranchCheck, card.newBranchBox);
                     SetRunExportEnabled();
                     HandleSubmoduleValueChanged();
                 };
 
-                branchBox.GetObservable(TextBox.TextProperty).Subscribe(_ =>
+                card.newBranchBox.GetObservable(TextBox.TextProperty).Subscribe(_ =>
                 {
                     SetRunExportEnabled();
                     HandleSubmoduleValueChanged();
                 });
 
-                var row = new StackPanel { Orientation = Orientation.Horizontal };
-                row.Children.Add(new TextBlock { Text = $"{submodule.Name} base branch" });
-                row.Children.Add(combo);
-                row.Children.Add(makeBranch);
-                row.Children.Add(branchBox);
-                _submodulePanel.Children.Add(row);
+                UpdateSubmoduleCardVisibility(card.branchCombo, card.createBranchCheck, card.newBranchBox);
 
                 if (savedSetting != null)
                 {
@@ -318,15 +316,16 @@ public partial class MainWindow
 
                     if (savedSetting.IsCreatingNewBranch)
                     {
-                        branchBox.Text = savedSetting.NewBranchName;
-                        makeBranch.IsChecked = true;
+                        card.newBranchBox.Text = savedSetting.NewBranchName;
+                        card.createBranchCheck.IsChecked = true;
                     }
                     else
                     {
-                        combo.SelectedItem = savedSetting.BaseBranch;
-                        makeBranch.IsChecked = false;
+                        card.branchCombo.SelectedItem = savedSetting.BaseBranch;
+                        card.createBranchCheck.IsChecked = false;
                     }
 
+                    UpdateSubmoduleCardVisibility(card.branchCombo, card.createBranchCheck, card.newBranchBox);
                     _isInternalChange = false;
                 }
             }
@@ -352,6 +351,210 @@ public partial class MainWindow
         {
             _checkDiffsButton.IsEnabled = true;
         }
+    }
+
+    (Border container, ComboBox branchCombo, CheckBox createBranchCheck, TextBox newBranchBox)
+        CreateSubmoduleCard(SubmoduleInfo submodule, IReadOnlyList<string> branches, bool isPreview)
+    {
+        var cardBorder = new Border
+        {
+            Background = new SolidColorBrush(Color.Parse("#1F1F1F")),
+            BorderBrush = new SolidColorBrush(Color.Parse("#323232")),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(8),
+            Padding = new Thickness(16)
+        };
+
+        var layout = new StackPanel { Spacing = 12 };
+
+        var header = new StackPanel { Spacing = 2 };
+        header.Children.Add(new TextBlock
+        {
+            Text = submodule.Name,
+            FontSize = 16,
+            FontWeight = FontWeight.SemiBold
+        });
+        header.Children.Add(new TextBlock
+        {
+            Text = submodule.Path,
+            Foreground = new SolidColorBrush(Color.Parse("#C5C5C5")),
+            FontSize = 12
+        });
+        header.Children.Add(new TextBlock
+        {
+            Text = submodule.Url,
+            Foreground = new SolidColorBrush(Color.Parse("#8C8C8C")),
+            FontSize = 12,
+            TextWrapping = TextWrapping.Wrap
+        });
+        layout.Children.Add(header);
+
+        layout.Children.Add(new TextBlock
+        {
+            Text = "Select a base branch or create a new branch for this submodule export.",
+            Foreground = new SolidColorBrush(Color.Parse("#BBBBBB")),
+            FontSize = 12,
+            TextWrapping = TextWrapping.Wrap
+        });
+
+        var branchRow = new Grid
+        {
+            ColumnDefinitions = new ColumnDefinitions("Auto,12,*"),
+            RowDefinitions = new RowDefinitions("Auto")
+        };
+
+        branchRow.Children.Add(new TextBlock
+        {
+            Text = "Base branch",
+            VerticalAlignment = VerticalAlignment.Center,
+            FontWeight = FontWeight.SemiBold
+        });
+
+        var branchCombo = new ComboBox
+        {
+            MinWidth = BOX_WIDTH,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            ItemsSource = branches
+        };
+        if (isPreview)
+            branchCombo.IsEnabled = false;
+
+        Grid.SetColumn(branchCombo, 2);
+        branchRow.Children.Add(branchCombo);
+        layout.Children.Add(branchRow);
+
+        var createBranchCheck = new CheckBox
+        {
+            Content = "Create new branch",
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        if (isPreview)
+            createBranchCheck.IsEnabled = false;
+
+        var newBranchPanel = new StackPanel { Spacing = 6 };
+        newBranchPanel.Children.Add(createBranchCheck);
+
+        var newBranchBox = new TextBox
+        {
+            MinWidth = BOX_WIDTH,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            IsVisible = false,
+            Watermark = "New branch name",
+            Margin = new Thickness(24, 0, 0, 0)
+        };
+        if (isPreview)
+            newBranchBox.IsEnabled = false;
+
+        newBranchPanel.Children.Add(newBranchBox);
+        layout.Children.Add(newBranchPanel);
+
+        cardBorder.Child = layout;
+
+        return (cardBorder, branchCombo, createBranchCheck, newBranchBox);
+    }
+
+    void UpdateSubmoduleCardVisibility(ComboBox branchCombo, CheckBox createBranchCheck, TextBox newBranchBox)
+    {
+        var isCreatingBranch = createBranchCheck.IsChecked == true;
+        branchCombo.IsVisible = isCreatingBranch == false;
+        newBranchBox.IsVisible = isCreatingBranch;
+    }
+
+    void PopulateDebugSubmodulePanel(IReadOnlyList<SubmoduleInfo> submodules, bool useSampleData)
+    {
+        _debugSubmodulePanel.Children.Clear();
+
+        if (submodules.Count == 0)
+        {
+            _debugSubmodulePanel.Children.Add(new TextBlock
+            {
+                Text = useSampleData
+                    ? "Sample submodule data is unavailable."
+                    : "No submodule diffs are currently loaded.",
+                Foreground = new SolidColorBrush(Color.Parse("#BBBBBB")),
+                TextWrapping = TextWrapping.Wrap
+            });
+            return;
+        }
+
+        for (var index = 0; index < submodules.Count; index++)
+        {
+            var submodule = submodules[index];
+            IReadOnlyList<string> branches;
+
+            if (useSampleData)
+            {
+                branches = SAMPLE_BRANCHES;
+            }
+            else if (_submoduleBranchBoxes.TryGetValue(submodule.Name, out var existingCombo))
+            {
+                branches = ExtractBranchOptions(existingCombo);
+            }
+            else
+            {
+                branches = Array.Empty<string>();
+            }
+
+            var card = CreateSubmoduleCard(submodule, branches, true);
+            _debugSubmodulePanel.Children.Add(card.container);
+
+            if (useSampleData)
+            {
+                var sampleBranch = index < branches.Count ? branches[index] : branches.FirstOrDefault();
+                card.branchCombo.SelectedItem = sampleBranch;
+
+                if (index == 1)
+                {
+                    card.createBranchCheck.IsChecked = true;
+                    card.newBranchBox.Text = "feature/localization-sync";
+                }
+                else if (index == 2)
+                {
+                    card.createBranchCheck.IsChecked = true;
+                    card.newBranchBox.Text = "hotfix/ui-polish";
+                }
+                else
+                {
+                    card.createBranchCheck.IsChecked = false;
+                }
+            }
+            else
+            {
+                if (_submoduleMakeBranchChecks.TryGetValue(submodule.Name, out var makeBranchCheck)
+                    && makeBranchCheck.IsChecked == true)
+                {
+                    card.createBranchCheck.IsChecked = true;
+                    card.newBranchBox.Text = _submoduleNewBranchBoxes.TryGetValue(submodule.Name, out var branchBox)
+                        ? branchBox?.Text ?? string.Empty
+                        : string.Empty;
+                }
+                else if (_submoduleBranchBoxes.TryGetValue(submodule.Name, out var baseBranchBox)
+                    && baseBranchBox.SelectedItem != null)
+                {
+                    card.branchCombo.SelectedItem = baseBranchBox.SelectedItem;
+                }
+            }
+
+            UpdateSubmoduleCardVisibility(card.branchCombo, card.createBranchCheck, card.newBranchBox);
+        }
+    }
+
+    List<SubmoduleInfo> BuildSampleSubmodules()
+        => SAMPLE_SUBMODULES.ToList();
+
+    static IReadOnlyList<string> ExtractBranchOptions(ComboBox combo)
+    {
+        if (combo.ItemsSource is IEnumerable enumerable)
+        {
+            return enumerable
+                .Cast<object?>()
+                .Select(item => item?.ToString() ?? string.Empty)
+                .Where(text => string.IsNullOrWhiteSpace(text) == false)
+                .Distinct()
+                .ToList();
+        }
+
+        return Array.Empty<string>();
     }
 
     void ClearExportFolder()
